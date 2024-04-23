@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 
-class MyBird extends StatefulWidget {
-  const MyBird({super.key});
+class BitCoin extends StatefulWidget {
+  const BitCoin({super.key});
 
   @override
-  State<MyBird> createState() => _MyBirdState();
+  State<BitCoin> createState() => _BitCoinState();
 }
 
-class _MyBirdState extends State<MyBird> {
+class _BitCoinState extends State<BitCoin> {
   final controller = GifController();
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: GifView.asset(
-          'assets/gifs/bird.gif',
-          controller: controller,
+        'assets/gifs/bitcoin.gif',
+        controller: controller,
         width: 80,
         height: 80,
-        frameRate: 30,
-        ),
+        frameRate: 15,
+      ),
     );
     /*  floatingActionButton: FloatingActionButton(
         onPressed: () {

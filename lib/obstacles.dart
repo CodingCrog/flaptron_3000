@@ -23,15 +23,21 @@ class Obstacle extends StatelessWidget {
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             color: Colors.green,
-            width: 60, // Obstacle width
+            width: 50, // Obstacle width
             height: topHeight,
           ),
           SizedBox(height: gapHeight), // Gap between obstacles
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            color: Colors.green,
-            width: 60, // Obstacle width
+            width: 50, // Obstacle width
             height: bottomHeight,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+
+                image: AssetImage("assets/images/pipe.jpeg"),
+                fit: BoxFit.fitHeight, // This will cover the container without changing the aspect ratio of the image
+              ),
+            ),
           ),
         ],
       ),

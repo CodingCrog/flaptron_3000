@@ -5,6 +5,7 @@ import 'package:flaptron_3000/background.dart';
 import 'package:flaptron_3000/bird.dart';
 import 'package:flaptron_3000/lowerbackground.dart';
 
+import 'bitcoin.dart';
 import 'obstacles.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,6 +25,35 @@ class _HomePageState extends State<HomePage> {
   double obstacleXPos = 1.0;
   static const double birdWidth = 40.0;
   static const double birdHeight = 40.0;
+  List<Offset> bitcoinPositions = [];
+  int score = 0;
+
+  void spawnBitcoin(double xPos, double yPos) {
+    bitcoinPositions.add(Offset(xPos, yPos));
+  }
+
+  void moveBitcoins() {
+    setState(() {
+      bitcoinPositions = bitcoinPositions.map((pos) => Offset(pos.dx - 5, pos.dy)).toList(); // Move bitcoins with obstacles
+      bitcoinPositions.removeWhere((pos) => pos.dx < -80); // Remove off-screen bitcoins
+    });
+  }
+
+  void checkBitcoinCollision() {
+    Rect birdRect = Rect.fromCenter(
+      center: Offset(MediaQuery.of(context).size.width * 0.4, MediaQuery.of(context).size.height * birdYAxis),
+      width: birdWidth,
+      height: birdHeight,
+    );
+
+    bitcoinPositions.removeWhere((pos) {
+      bool collides = birdRect.contains(pos);
+      if (collides) {
+        score += 10; // Increment score by 10 for each bitcoin collected
+      }
+      return collides;
+    });
+  }
 
   void jump() {
     time = 0; // Reset time each jump
@@ -61,20 +91,42 @@ class _HomePageState extends State<HomePage> {
 
   }
 
+  void spawnRandomBitcoin() {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    Random rand = Random();
+
+    // Generate a random Y position for the bitcoin
+    double yPos = rand.nextDouble() * (screenHeight - 50); // Subtract bitcoin height for safe margin
+    double xPos = screenWidth + rand.nextDouble() * 200; // Spawn off-screen to the right
+
+    spawnBitcoin(xPos, yPos);
+  }
+
   void startGame() {
     if (!gameHasStarted) {
       gameHasStarted = true;
       obstacles.clear();
+      bitcoinPositions.clear(); // Clear previous bitcoins
       generateObstacle(); // Generate the first obstacle
+      spawnRandomBitcoin(); // Spawn the first bitcoin
       jumpTimer?.cancel();
       jumpTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
         time += 0.04;
+
+        // Periodically spawn bitcoins
+        if (Random().nextDouble() > 0.95) { // Approximately every 2 seconds at 50fps
+          spawnRandomBitcoin();
+        }
+
         double height = -4.5 * time * time + 1.5 * time;
 
         setState(() {
           double newY = initialHeight - height;
           birdYAxis = newY.clamp(0.0, 1.0);
-          moveObstacles(); // Move obstacles each tick
+          moveObstacles();
+          moveBitcoins();
+          checkBitcoinCollision();
 
           if (birdYAxis >= 1 || checkCollision()) {
             timer.cancel();
@@ -87,20 +139,20 @@ class _HomePageState extends State<HomePage> {
 
   void generateObstacle() {
     double screenHeight = MediaQuery.of(context).size.height;
-    double maxTopHeight = screenHeight * 0.4;  // Max height for top obstacle
-    double minGapHeight = screenHeight * 0.15; // Min gap height
-    double obstacleTopHeight = Random().nextDouble() * (maxTopHeight - minGapHeight) + minGapHeight;
+    double screenWidth = MediaQuery.of(context).size.width;
     double gapHeight = screenHeight * (0.15 + Random().nextDouble() * 0.1);
+    double obstacleTopHeight = screenHeight * (0.2 + Random().nextDouble() * 0.15);
     double obstacleBottomHeight = screenHeight - obstacleTopHeight - gapHeight;
-
-    Obstacle newObstacle = Obstacle(
+    obstacles.add(Obstacle(
       gapHeight: gapHeight,
       topHeight: obstacleTopHeight,
       bottomHeight: obstacleBottomHeight,
-      xPos: MediaQuery.of(context).size.width,
-    );
-    obstacles.add(newObstacle);
+      xPos: screenWidth,
+    ));
   }
+
+
+
   void moveObstacles() {
     for (int i = 0; i < obstacles.length; i++) {
       Obstacle obs = obstacles[i];
@@ -175,10 +227,19 @@ class _HomePageState extends State<HomePage> {
                     left: MediaQuery.of(context).size.width * 0.4, // Horizontal center
                     child: const MyBird(),
                   ),
-                  ...obstacles,
+                  ...obstacles.map((obs) => obs.build(context)).toList(),
+                  ...bitcoinPositions.map((pos) => Positioned(
+                    left: pos.dx,
+                    top: pos.dy,
+                    child: const BitCoin(),
+                  )).toList(),
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0,bottom: 16),
+              child: Text('Score: $score',),
+            ),  // Display the current score
           ],
         ),
       ),
