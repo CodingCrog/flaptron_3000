@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flaptron_3000/background.dart';
 import 'package:flaptron_3000/bird.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  AudioPlayer player = AudioPlayer();
   double birdYAxis = 0.5; // Initialize directly
   double time = 0;
   double initialHeight = 1;
@@ -28,20 +30,35 @@ class _HomePageState extends State<HomePage> {
   List<Offset> bitcoinPositions = [];
   int score = 0;
 
+  @override
+  void initState() {}
+
+  @override
+  void dispose() {
+    // Release all sources and dispose the player.
+    player.dispose();
+
+    super.dispose();
+  }
+
   void spawnBitcoin(double xPos, double yPos) {
     bitcoinPositions.add(Offset(xPos, yPos));
   }
 
   void moveBitcoins() {
     setState(() {
-      bitcoinPositions = bitcoinPositions.map((pos) => Offset(pos.dx - 5, pos.dy)).toList(); // Move bitcoins with obstacles
-      bitcoinPositions.removeWhere((pos) => pos.dx < -80); // Remove off-screen bitcoins
+      bitcoinPositions = bitcoinPositions
+          .map((pos) => Offset(pos.dx - 5, pos.dy))
+          .toList(); // Move bitcoins with obstacles
+      bitcoinPositions
+          .removeWhere((pos) => pos.dx < -80); // Remove off-screen bitcoins
     });
   }
 
   void checkBitcoinCollision() {
     Rect birdRect = Rect.fromCenter(
-      center: Offset(MediaQuery.of(context).size.width * 0.4, MediaQuery.of(context).size.height * birdYAxis),
+      center: Offset(MediaQuery.of(context).size.width * 0.4,
+          MediaQuery.of(context).size.height * birdYAxis),
       width: birdWidth,
       height: birdHeight,
     );
@@ -80,7 +97,7 @@ class _HomePageState extends State<HomePage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                restartGame();  // Restart game logic
+                restartGame(); // Restart game logic
               },
               child: const Text('Play Again'),
             ),
@@ -88,7 +105,6 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-
   }
 
   void spawnRandomBitcoin() {
@@ -97,13 +113,17 @@ class _HomePageState extends State<HomePage> {
     Random rand = Random();
 
     // Generate a random Y position for the bitcoin
-    double yPos = rand.nextDouble() * (screenHeight - 50); // Subtract bitcoin height for safe margin
-    double xPos = screenWidth + rand.nextDouble() * 200; // Spawn off-screen to the right
+    double yPos = rand.nextDouble() *
+        (screenHeight - 50); // Subtract bitcoin height for safe margin
+    double xPos =
+        screenWidth + rand.nextDouble() * 200; // Spawn off-screen to the right
 
     spawnBitcoin(xPos, yPos);
   }
 
   void startGame() {
+    player.play(AssetSource("MegaMan2.mp3"));
+
     if (!gameHasStarted) {
       gameHasStarted = true;
       obstacles.clear();
@@ -115,7 +135,8 @@ class _HomePageState extends State<HomePage> {
         time += 0.04;
 
         // Periodically spawn bitcoins
-        if (Random().nextDouble() > 0.95) { // Approximately every 2 seconds at 50fps
+        if (Random().nextDouble() > 0.95) {
+          // Approximately every 2 seconds at 50fps
           spawnRandomBitcoin();
         }
 
@@ -141,7 +162,8 @@ class _HomePageState extends State<HomePage> {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     double gapHeight = screenHeight * (0.15 + Random().nextDouble() * 0.1);
-    double obstacleTopHeight = screenHeight * (0.2 + Random().nextDouble() * 0.15);
+    double obstacleTopHeight =
+        screenHeight * (0.2 + Random().nextDouble() * 0.15);
     double obstacleBottomHeight = screenHeight - obstacleTopHeight - gapHeight;
     obstacles.add(Obstacle(
       gapHeight: gapHeight,
@@ -150,8 +172,6 @@ class _HomePageState extends State<HomePage> {
       xPos: screenWidth,
     ));
   }
-
-
 
   void moveObstacles() {
     for (int i = 0; i < obstacles.length; i++) {
@@ -174,7 +194,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool checkCollision() {
-    double padding = 5.0;  // Reduce the collision size by 5 pixels on all sides
+    double padding = 5.0; // Reduce the collision size by 5 pixels on all sides
     Rect birdRect = Rect.fromLTWH(
       MediaQuery.of(context).size.width * 0.4 + padding,
       MediaQuery.of(context).size.height * birdYAxis + padding,
@@ -197,7 +217,8 @@ class _HomePageState extends State<HomePage> {
         obstacle.bottomHeight - padding,
       );
 
-      if (birdRect.overlaps(topObstacleRect) || birdRect.overlaps(bottomObstacleRect)) {
+      if (birdRect.overlaps(topObstacleRect) ||
+          birdRect.overlaps(bottomObstacleRect)) {
         return true;
       }
     }
@@ -224,22 +245,27 @@ class _HomePageState extends State<HomePage> {
                   const Positioned(bottom: 0, child: BackGround()),
                   Positioned(
                     top: MediaQuery.of(context).size.height * birdYAxis,
-                    left: MediaQuery.of(context).size.width * 0.4, // Horizontal center
+                    left: MediaQuery.of(context).size.width *
+                        0.4, // Horizontal center
                     child: const MyBird(),
                   ),
                   ...obstacles.map((obs) => obs.build(context)).toList(),
-                  ...bitcoinPositions.map((pos) => Positioned(
-                    left: pos.dx,
-                    top: pos.dy,
-                    child: const BitCoin(),
-                  )).toList(),
+                  ...bitcoinPositions
+                      .map((pos) => Positioned(
+                            left: pos.dx,
+                            top: pos.dy,
+                            child: const BitCoin(),
+                          ))
+                      .toList(),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 16.0,bottom: 16),
-              child: Text('Score: $score',),
-            ),  // Display the current score
+              padding: const EdgeInsets.only(top: 16.0, bottom: 16),
+              child: Text(
+                'Score: $score',
+              ),
+            ), // Display the current score
           ],
         ),
       ),
