@@ -33,9 +33,9 @@ class Obstacle extends StatelessWidget {
             height: bottomHeight,
             decoration: const BoxDecoration(
               image: DecorationImage(
-
                 image: AssetImage("assets/images/pipe.jpeg"),
-                fit: BoxFit.fitHeight, // This will cover the container without changing the aspect ratio of the image
+                fit: BoxFit
+                    .fitHeight, // This will cover the container without changing the aspect ratio of the image
               ),
             ),
           ),

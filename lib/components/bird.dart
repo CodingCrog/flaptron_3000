@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 
-class LowerBackGround extends StatefulWidget {
-  const LowerBackGround({super.key});
+class MyBird extends StatefulWidget {
+  const MyBird({super.key});
 
   @override
-  State<LowerBackGround> createState() => _LowerBackGroundState();
+  State<MyBird> createState() => _MyBirdState();
 }
 
-class _LowerBackGroundState extends State<LowerBackGround> {
+class _MyBirdState extends State<MyBird> {
+  final controller = GifController();
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity:  0.5,
+    return SizedBox(
       child: GifView.asset(
-        'assets/gifs/background1.gif',
-        frameRate: 10,
-        color: Colors.black.withOpacity(0.9), // Adjust opacity to your preference
-        colorBlendMode: BlendMode.lighten,
+        'assets/gifs/bird.gif',
+        controller: controller,
+        width: 80,
+        height: 80,
+        frameRate: 30,
       ),
     );
     /*  floatingActionButton: FloatingActionButton(
