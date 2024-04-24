@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flaptron_3000/level/background.dart';
 import 'package:flaptron_3000/components/bird.dart';
 import 'package:flaptron_3000/level/lowerbackground.dart';
+import 'package:lottie/lottie.dart';
 import 'components/bitcoin.dart';
 import 'components/obstacles.dart';
 import 'services/audiomanager.dart';
@@ -30,6 +31,8 @@ class _HomePageState extends State<HomePage> {
   double obstacleXPos = 1.0;
   static const double birdWidth = 40.0;
   static const double birdHeight = 40.0;
+  bool showCoinAnimation = false;
+  Offset coinAnimationPosition = Offset.zero;
 
   int score = 0;
   late BitcoinManager bitcoinManager;
@@ -75,13 +78,16 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       birdYAxis = 0.5; // Reset bird position
       time = 0; // Reset time
-      initialHeight = 0.5; // Reset initial height
+      initialHeight = 0.5;
+      obstacles.clear();
+      bitcoinManager.bitcoinPositions.clear();
+      score = 0; // Reset score
       gameHasStarted = false; // Allow the game to be started again
     });
   }
 
   void startGame() {
-    audioManager.play("MegaMan2.mp3");
+   // audioManager.play("MegaMan2.mp3");
 
     if (!gameHasStarted) {
       gameHasStarted = true;
@@ -146,6 +152,17 @@ class _HomePageState extends State<HomePage> {
                     left: MediaQuery.of(context).size.width *
                         0.4, // Horizontal center
                     child: const MyBird(),
+                  ),
+                  if (!gameHasStarted) Positioned(
+                    top: MediaQuery.of(context).size.height * birdYAxis + 60,
+                    left: MediaQuery.of(context).size.width *
+                        0.5, //
+                    child: Lottie.asset(
+                      'assets/lottiefiles/tap.json',
+                      width: 80,
+                      height: 80,
+                      frameRate: const FrameRate(30), // Optional: Adjust based on your animation's needs
+                    ),
                   ),
                   ...obstacles.map((obs) => obs.build(context)).toList(),
                   ...bitcoinManager.bitcoinPositions

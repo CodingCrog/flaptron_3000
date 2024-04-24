@@ -33,3 +33,13 @@ class _BitCoinState extends State<BitCoin> {
       ); */
   }
 }
+/*@override
+Widget build(BuildContext context) {
+  return SizedBox(
+    child: Lottie.asset(
+      'assets/lottiefiles/bitcoin.json',
+      width: 80,
+      height: 80,
+      frameRate: const FrameRate(30), // Optional: Adjust based on your animation's needs
+    ),
+  );*/
