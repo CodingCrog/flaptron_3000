@@ -34,9 +34,20 @@ class _HomePageState extends State<HomePage> {
   bool showCoinAnimation = false;
   Offset coinAnimationPosition = Offset.zero;
   bool isGamePaused = false;
-
   int score = 0;
   late BitcoinManager bitcoinManager;
+  double gravity = 9.8; // Earth's gravity in m/s^2
+  double velocity = 0;
+  double jumpStrength = -50; // Upward strength of jump
+
+  void updatePhysics(double deltaTime) {
+    velocity += gravity * deltaTime; // Increment velocity by gravity over time
+    birdYAxis += velocity * deltaTime; // Update position by velocity over time
+
+    if (birdYAxis > 1) {
+      birdYAxis = 1; // Prevent bird from falling below the screen
+    }
+  }
 
   @override
   void initState() {
@@ -68,8 +79,10 @@ class _HomePageState extends State<HomePage> {
       isGamePaused = true;
     } else {
       // Resume the game
-      jumpTimer = Timer.periodic(
-          const Duration(milliseconds: 80), (timer) => updateGame());
+      jumpTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
+        updatePhysics(0.080); // Assume each frame is approximately 16ms
+        updateGame();
+      });
       audioManager.play("sounds/MegaMan2.mp3"); // Optionally resume the music
       isGamePaused = false;
     }
@@ -111,6 +124,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void jump() {
+    velocity = jumpStrength;
     time = 0; // Reset time each jump
     initialHeight = birdYAxis; // Reset initialHeight to current position
   }
@@ -136,8 +150,10 @@ class _HomePageState extends State<HomePage> {
       generateObstacle(context, obstacles); // Generate the first obstacle
       bitcoinManager.spawnRandomBitcoin(); // Spawn the first bitcoin
       jumpTimer?.cancel();
-      jumpTimer = Timer.periodic(
-          const Duration(milliseconds: 80), (timer) => updateGame());
+      jumpTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
+        updatePhysics(0.080); // Assume each frame is approximately 16ms
+        updateGame();
+      });
     }
   }
 
