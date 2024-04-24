@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flaptron_3000/widgets/taphint.dart';
 import 'package:flutter/material.dart';
 import 'package:flaptron_3000/level/background.dart';
 import 'package:flaptron_3000/components/bird.dart';
 import 'package:flaptron_3000/level/lowerbackground.dart';
-import 'package:lottie/lottie.dart';
 import 'components/bitcoin.dart';
 import 'components/obstacles.dart';
 import 'services/audiomanager.dart';
@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   static const double birdHeight = 40.0;
   bool showCoinAnimation = false;
   Offset coinAnimationPosition = Offset.zero;
+  bool isGamePaused = false;
 
   int score = 0;
   late BitcoinManager bitcoinManager;
@@ -40,13 +41,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Initialize with default or initial values
     bitcoinManager = BitcoinManager(
       screenWidth: 0,
       screenHeight: 0,
     );
 
-    // Update the dimensions when the context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         bitcoinManager.screenWidth = MediaQuery.of(context).size.width;
@@ -61,8 +60,50 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void pauseGame() {
-    audioManager.pause();
+  void togglePauseGame() {
+    if (!isGamePaused) {
+      // Pause the game
+      jumpTimer?.cancel(); // Stop the game timer
+      audioManager.pause(); // Optionally pause the game sound
+      isGamePaused = true;
+    } else {
+      // Resume the game
+      jumpTimer = Timer.periodic(
+          const Duration(milliseconds: 80), (timer) => updateGame());
+      audioManager.play("sounds/MegaMan2.mp3"); // Optionally resume the music
+      isGamePaused = false;
+    }
+  }
+
+  void updateGame() {
+    time += 0.04;
+
+    // Periodically spawn bitcoins
+    if (Random().nextDouble() > 0.95) {
+      // Approximately every 2 seconds at 50fps
+      bitcoinManager.spawnRandomBitcoin();
+    }
+
+    double height = -4.5 * time * time + 1.5 * time;
+    setState(() {
+      double newY = initialHeight - height;
+      birdYAxis = newY.clamp(0.0, 1.0);
+      moveObstacles(context, obstacles);
+      bitcoinManager.moveBitcoins();
+
+      // Update score based on bitcoin collision
+      int collidedCount = checkBitCoinCollision(context, birdYAxis, birdWidth,
+          birdHeight, bitcoinManager.bitcoinPositions);
+      score += collidedCount *
+          10; // Increment score by 10 for each bitcoin collected
+
+      if (birdYAxis >= 1 ||
+          checkObstacleCollision(
+              context, birdYAxis, birdWidth, birdHeight, obstacles)) {
+        jumpTimer?.cancel();
+        showDialogGameOver(context, score, restartGame);
+      }
+    });
   }
 
   void toggleSound() {
@@ -87,45 +128,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   void startGame() {
-   // audioManager.play("MegaMan2.mp3");
-
     if (!gameHasStarted) {
+      audioManager.play("sounds/MegaMan2.mp3");
       gameHasStarted = true;
       obstacles.clear();
       bitcoinManager.bitcoinPositions.clear(); // Clear previous bitcoins
       generateObstacle(context, obstacles); // Generate the first obstacle
       bitcoinManager.spawnRandomBitcoin(); // Spawn the first bitcoin
       jumpTimer?.cancel();
-      jumpTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
-        time += 0.04;
-
-        // Periodically spawn bitcoins
-        if (Random().nextDouble() > 0.95) {
-          // Approximately every 2 seconds at 50fps
-          bitcoinManager.spawnRandomBitcoin();
-        }
-
-        double height = -4.5 * time * time + 1.5 * time;
-        setState(() {
-          double newY = initialHeight - height;
-          birdYAxis = newY.clamp(0.0, 1.0);
-          moveObstacles(context, obstacles);
-          bitcoinManager.moveBitcoins();
-
-          // Update score based on bitcoin collision
-          int collidedCount = checkBitCoinCollision(context, birdYAxis,
-              birdWidth, birdHeight, bitcoinManager.bitcoinPositions);
-          score += collidedCount *
-              10; // Increment score by 10 for each bitcoin collected
-
-          if (birdYAxis >= 1 ||
-              checkObstacleCollision(
-                  context, birdYAxis, birdWidth, birdHeight, obstacles)) {
-            timer.cancel();
-            showDialogGameOver(context, score, restartGame);
-          }
-        });
-      });
+      jumpTimer = Timer.periodic(
+          const Duration(milliseconds: 80), (timer) => updateGame());
     }
   }
 
@@ -135,7 +147,7 @@ class _HomePageState extends State<HomePage> {
       onTap: () {
         if (!gameHasStarted) {
           startGame();
-        } else {
+        } else if (!isGamePaused) {
           jump();
         }
       },
@@ -153,17 +165,7 @@ class _HomePageState extends State<HomePage> {
                         0.4, // Horizontal center
                     child: const MyBird(),
                   ),
-                  if (!gameHasStarted) Positioned(
-                    top: MediaQuery.of(context).size.height * birdYAxis + 60,
-                    left: MediaQuery.of(context).size.width *
-                        0.5, //
-                    child: Lottie.asset(
-                      'assets/lottiefiles/tap.json',
-                      width: 80,
-                      height: 80,
-                      frameRate: const FrameRate(30), // Optional: Adjust based on your animation's needs
-                    ),
-                  ),
+                  if (!gameHasStarted) TapHintAnimation(birdYAxi: birdYAxis),
                   ...obstacles.map((obs) => obs.build(context)).toList(),
                   ...bitcoinManager.bitcoinPositions
                       .map((pos) => Positioned(
@@ -175,12 +177,56 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0, bottom: 16),
-              child: Text(
-                'Score: $score',
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF212121),
+                    Color(0xFF2196F3),
+                    Color(0xFF212121),
+                  ],
+                  // Define the stops for color transition
+                  stops: [0.0, 0.5, 1.0],
+                  // Define the direction of the gradient, top to bottom
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-            ), // Display the current score
+              child: Center(
+                child: Text(
+                  'Score: $score',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(audioManager.isMuted
+                      ? Icons.volume_off
+                      : Icons.volume_up),
+                  onPressed: () {
+                    setState(() {
+                      audioManager.toggleMute();
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(isGamePaused ? Icons.play_arrow : Icons.pause),
+                  onPressed: () {
+                    setState(() {
+                      togglePauseGame();
+                    });
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),

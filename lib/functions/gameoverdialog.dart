@@ -16,7 +16,8 @@ void showDialogGameOver(BuildContext context, int score, Function restartGame) {
             'assets/lottiefiles/rip.json',
             width: 160,
             height: 160,
-            frameRate: const FrameRate(60), // Optional: Adjust based on your animation's needs
+            frameRate: const FrameRate(20),
+            repeat: false,// Optional: Adjust based on your animation's needs
           ),
         ),
         content: Text(

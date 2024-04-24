@@ -14,18 +14,12 @@ class AudioManager {
     await _player.pause();
   }
 
-  Future<void> stop() async {
-    await _player.stop();
-  }
-
   void toggleMute() {
     _isMuted = !_isMuted;
-    if (_isMuted) {
-      _player.stop();  // Optionally stop the music when muted
-    } else {
-      // Optionally restart your background music if needed
-    }
+    _isMuted ? _player.setVolume(0) : _player.setVolume(1);
   }
+
+  bool get isMuted => _isMuted;
 
   void dispose() {
     _player.dispose();
