@@ -19,10 +19,15 @@ void generateObstacle(BuildContext context, List<Obstacle> obstacles) {
   ));
 }
 
-void moveObstacles(BuildContext context, List<Obstacle> obstacles) {
+void moveObstacles(
+    BuildContext context, List<Obstacle> obstacles, double speedMultiplier) {
+  double baseMove = 5.0; // Base movement speed to the left
+
   for (int i = 0; i < obstacles.length; i++) {
     Obstacle obs = obstacles[i];
-    double newXPos = obs.xPos - 5; // Move obstacles to the left
+    double newXPos =
+        obs.xPos - (baseMove * speedMultiplier); // Apply speed multiplier here
+
     obstacles[i] = Obstacle(
       gapHeight: obs.gapHeight,
       topHeight: obs.topHeight,
