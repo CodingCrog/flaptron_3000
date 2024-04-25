@@ -12,8 +12,10 @@ class Obstacle extends StatelessWidget {
     Color(0xFF1CC0FF), // Teal
     Color(0xFFB131FA), // Dark Blue
     Color(0xFF4A0074), // Dark Grey
-    Color(0xFF1C3AFF), // Futuristic Pink
- //   Color(0xFF9C27B0), // Futuristic Purple
+    Color(0xFF1C3AFF),
+    Colors.redAccent,
+    Colors.black,// Futuristic Pink
+    //Color(0xFF9C27B0), // Futuristic Purple
   ];
 
   const Obstacle({
@@ -42,11 +44,15 @@ class Obstacle extends StatelessWidget {
       child: Column(
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
-            width: 50, // Obstacle width
+            width: 60, // Obstacle width
             height: topHeight,
             decoration: BoxDecoration(
+              border: Border.all(
+                color: const Color(0xFF4A0074).withOpacity(0.8),
+                width: 2,
+              ),
               gradient: LinearGradient(
                 colors: topGradient,
                 stops: const [0.0, 0.5, 1.0],
@@ -61,11 +67,15 @@ class Obstacle extends StatelessWidget {
           ),
           SizedBox(height: gapHeight), // Gap between obstacles
           AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
-            width: 50, // Obstacle width
+            width: 60, // Obstacle width
             height: bottomHeight,
             decoration: BoxDecoration(
+              border: Border.all(
+                color: const Color(0xFF4A0074).withOpacity(0.8),
+                width: 2,
+              ),
               gradient: LinearGradient(
                 colors: bottomGradient,
                 stops: const [0.0, 0.5, 1.0],
