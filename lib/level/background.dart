@@ -16,8 +16,8 @@ class _BackGroundState extends State<BackGround> {
       child: GifView.asset(
         'assets/gifs/background1.gif',
         frameRate: 20,
-        color: Colors.black.withOpacity(0.5),
-        colorBlendMode: BlendMode.lighten,
+      //  color: Colors.black.withOpacity(0.5),
+       // colorBlendMode: BlendMode.lighten,
       ),
     );
     /*  floatingActionButton: FloatingActionButton(

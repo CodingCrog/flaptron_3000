@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flaptron_3000/widgets/taphint.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flaptron_3000/level/background.dart';
 import 'package:flaptron_3000/components/bird.dart';
 import 'package:flaptron_3000/level/lowerbackground.dart';
 import 'components/bitcoin.dart';
 import 'components/obstacles.dart';
+import 'level/background_web.dart';
 import 'services/audiomanager.dart';
 import 'services/bitcoinmanager.dart';
 import 'functions/checkcollision.dart';
@@ -70,7 +73,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       velocity = 0; // Ensure velocity is zeroed to prevent any downward movement
     }
-    birdYAxis += velocity * deltaTime; // Update position by velocity over time
+    birdYAxis += velocity ; // Update position by velocity over time
 
     // Clamping birdYAxis to ensure it remains within screen bounds
     if (birdYAxis > 1) {
@@ -190,6 +193,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  bool isDesktop() {
+    return Platform.isMacOS || Platform.isLinux || Platform.isWindows || kIsWeb;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -201,7 +208,7 @@ class _HomePageState extends State<HomePage> {
         }
       },
       onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta != null && details.primaryDelta! > 0) {
+        if (details.primaryDelta != null && details.primaryDelta! < 0) {
           // Only increase speed if swiping right
           increaseObstacleSpeed();
         }
@@ -212,8 +219,9 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Stack(
                 children: [
-                  const Positioned(top: 0, child: LowerBackGround()),
-                  const Positioned(bottom: 0, child: BackGround()),
+                  //!isDesktop() ? const Positioned(top: 0, child: LowerBackGround()) :
+                  const BackgroundImageWeb(),
+                 // const Positioned(bottom: 0, child: BackGround()),
                   Positioned(
                     top: MediaQuery.of(context).size.height * birdYAxis,
                     left: MediaQuery.of(context).size.width *
