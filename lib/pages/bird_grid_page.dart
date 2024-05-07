@@ -162,7 +162,7 @@ class BirdGridPage extends StatelessWidget {
                           top: 0,
                           right: 0,
                           child: IconButton(
-                            icon: const Icon(Icons.diamond_outlined, color : Colors.orangeAccent),
+                            icon: const Icon(Icons.diamond_outlined, color : Colors.pinkAccent),
                             onPressed: () async {
                               await _launchUrl(birds[index].nft);
                             },

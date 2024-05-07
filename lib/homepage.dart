@@ -243,20 +243,7 @@ class _HomePageState extends State<HomePage> {
                   //!isDesktop() ? const Positioned(top: 0, child: LowerBackGround()) :
                   const BackgroundImageWeb(),
                   // const Positioned(bottom: 0, child: BackGround()),
-                  Positioned(
-                    top: MediaQuery.of(context).size.width *
-                        0.3,
-                    left: MediaQuery.of(context).size.width *
-                        0.5,
-                    child: Text(
-                      '$score',
-                      style: const TextStyle(
-                        color: Colors.orangeAccent,
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+
                   //the gif seems to be bigger than the actual bird
                   Positioned(
                     top: MediaQuery.of(context).size.height * birdYAxis -
@@ -281,22 +268,24 @@ class _HomePageState extends State<HomePage> {
                           ))
                       .toList(),
                   Positioned(
-                    top: 20,
-                    left: 20,
+                    top: 50,
+                    left: MediaQuery.of(context).size.width *
+                        0.5,
                     child: Text(
-                      'High Score: $highScore',
-                      style: const TextStyle(color: Colors.deepOrangeAccent, fontSize: 24),
+                      '$score',
+                      style: const TextStyle(
+                        color: Colors.orangeAccent,
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Positioned(
                     top: 20,
-                    right: 20,
-                    child: IconButton(
-                      onPressed: () {
-                       Navigator.push(context, MaterialPageRoute(builder: (context) => BirdGridPage()));
-                      },
-                      icon: const Icon(Icons.settings),
-                      tooltip: 'Bird Gallery',
+                    left: 20,
+                    child: Text(
+                      'High Score: $highScore',
+                      style: const TextStyle(color: Colors.orange, fontSize: 14),
                     ),
                   ),
                 ],
@@ -332,8 +321,11 @@ class _HomePageState extends State<HomePage> {
 
             */
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(
+                  width: 80,
+                ),
                 IconButton(
                   icon: Icon(audioManager.isMuted
                       ? Icons.volume_off
@@ -352,6 +344,17 @@ class _HomePageState extends State<HomePage> {
                     });
                   },
                 ),
+                const SizedBox(
+                  width: 80,
+                ),
+                IconButton(
+                  tooltip: 'Bird Gallery',
+                  icon: const Icon(Icons.diamond_outlined, color: Colors.pinkAccent,),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => BirdGridPage()));
+                  },
+                ),
+
               ],
             ),
           ],
