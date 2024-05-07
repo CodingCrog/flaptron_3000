@@ -258,9 +258,12 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Positioned(
-                    top: MediaQuery.of(context).size.height * birdYAxis,
-                    left: MediaQuery.of(context).size.width *
-                        0.4, // Horizontal center
+                    top: MediaQuery.of(context).size.height * birdYAxis -
+                        birdHeight / 2,
+                    left: MediaQuery.of(context).size.width * 0.4 -
+                        birdWidth / 2, // Horizontal center
+                    width: birdWidth,
+                    height: birdHeight,
                     child: MyBird(
                       showSpeedBoost: showSpeedBoost,
                     ),
@@ -269,8 +272,10 @@ class _HomePageState extends State<HomePage> {
                   ...obstacles.map((obs) => obs.build(context)).toList(),
                   ...bitcoinManager.bitcoinPositions
                       .map((pos) => Positioned(
-                            left: pos.dx,
-                            top: pos.dy,
+                            left: pos.dx - 50,
+                            top: pos.dy - 50,
+                            width: 100,
+                            height: 100,
                             child: const BitCoin(),
                           ))
                       .toList(),
