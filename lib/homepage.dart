@@ -257,13 +257,14 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  //the gif seems to be bigger than the actual bird
                   Positioned(
                     top: MediaQuery.of(context).size.height * birdYAxis -
-                        birdHeight / 2,
+                        50,
                     left: MediaQuery.of(context).size.width * 0.4 -
-                        birdWidth / 2, // Horizontal center
-                    width: birdWidth,
-                    height: birdHeight,
+                        50, // Horizontal center
+                    width: 100,
+                    height: 100,
                     child: MyBird(
                       showSpeedBoost: showSpeedBoost,
                     ),
