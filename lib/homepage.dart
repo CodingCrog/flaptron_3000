@@ -41,10 +41,10 @@ class _HomePageState extends State<HomePage> {
   bool isGamePaused = false;
   int score = 0;
   late BitcoinManager bitcoinManager;
-  double gravity = 1.2; // 120% of display per square-second
+  double gravity = 1.0; // 120% of display per square-second
   double velocity = 0;
   double fallSpeedLimit = 0.5; // 50% of display per second
-  double jumpStrength = -0.5; // 50% of display per second
+  double jumpStrength = -0.4; // 50% of display per second
   double obstacleSpeedMultiplier = 1.0;
   bool isFallingPaused = false;
   bool showSpeedBoost = false;
