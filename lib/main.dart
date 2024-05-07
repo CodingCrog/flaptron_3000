@@ -1,8 +1,11 @@
+import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
 
 import 'homepage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferencesHelper.init();
   runApp(const MyApp());
 }
 

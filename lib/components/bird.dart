@@ -22,9 +22,9 @@ class _MyBirdState extends State<MyBird> {
           GifView.asset(
             'assets/gifs/bird.gif',
             controller: controller,
-            width: 80,
-            height: 80,
-            frameRate: 30,
+            width: 100,
+            height: 100,
+            frameRate: 10,
           ),
           Visibility(
             visible: widget.showSpeedBoost,

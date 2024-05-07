@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
+import 'package:lottie/lottie.dart';
 
 class BitCoin extends StatefulWidget {
   const BitCoin({super.key});
@@ -10,7 +11,7 @@ class BitCoin extends StatefulWidget {
 
 class _BitCoinState extends State<BitCoin> {
   final controller = GifController();
-
+/*
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -32,14 +33,16 @@ class _BitCoinState extends State<BitCoin> {
         },
       ); */
   }
-}
-/*@override
+}*/
+@override
 Widget build(BuildContext context) {
   return SizedBox(
     child: Lottie.asset(
       'assets/lottiefiles/bitcoin.json',
-      width: 80,
-      height: 80,
-      frameRate: const FrameRate(30), // Optional: Adjust based on your animation's needs
+      width: 100,
+      height: 100,
+      frameRate: const FrameRate(20), // Optional: Adjust based on your animation's needs
     ),
-  );*/
+  );
+}
+}

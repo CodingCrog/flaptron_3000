@@ -13,7 +13,7 @@ class Obstacle extends StatelessWidget {
     Color(0xFFB131FA), // Dark Blue
     Color(0xFF4A0074), // Dark Grey
     Color(0xFF1C3AFF),
-    Colors.redAccent,
+    Colors.white,
     Colors.black,// Futuristic Pink
     //Color(0xFF9C27B0), // Futuristic Purple
   ];
@@ -50,15 +50,10 @@ class Obstacle extends StatelessWidget {
             height: topHeight,
             decoration: BoxDecoration(
               border: Border.all(
-                color: const Color(0xFF4A0074).withOpacity(0.8),
-                width: 2,
+                color: Colors.black,
+                width: 3,
               ),
-              gradient: LinearGradient(
-                colors: topGradient,
-                stops: const [0.0, 0.5, 1.0],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              color: Colors.lightGreen,
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(10),
                 bottomRight: Radius.circular(10),
@@ -73,15 +68,10 @@ class Obstacle extends StatelessWidget {
             height: bottomHeight,
             decoration: BoxDecoration(
               border: Border.all(
-                color: const Color(0xFF4A0074).withOpacity(0.8),
-                width: 2,
+                color: Colors.black,
+                width: 3,
               ),
-              gradient: LinearGradient(
-                colors: bottomGradient,
-                stops: const [0.0, 0.5, 1.0],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              color: Colors.lightGreen,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:flaptron_3000/pages/bird_grid_page.dart';
+import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +47,7 @@ class _HomePageState extends State<HomePage> {
   double obstacleSpeedMultiplier = 1.0;
   bool isFallingPaused = false;
   bool showSpeedBoost = false;
+  int highScore = 0;
 
   void increaseObstacleSpeed() {
     setState(() {
@@ -58,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         if (mounted) {
           setState(() {
             obstacleSpeedMultiplier = 1.0; // Reset to normal speed
-            bitcoinManager.setSpeedMultiplier(1.0);  // Reset bitcoin speed
+            bitcoinManager.setSpeedMultiplier(1.0); // Reset bitcoin speed
             isFallingPaused = false; // Resume normal falling
             showSpeedBoost = false;
           });
@@ -69,11 +72,13 @@ class _HomePageState extends State<HomePage> {
 
   void updatePhysics(double deltaTime) {
     if (!isFallingPaused) {
-      velocity += gravity * deltaTime; // Increment velocity by gravity over time
+      velocity +=
+          gravity * deltaTime; // Increment velocity by gravity over time
     } else {
-      velocity = 0; // Ensure velocity is zeroed to prevent any downward movement
+      velocity =
+          0; // Ensure velocity is zeroed to prevent any downward movement
     }
-    birdYAxis += velocity ; // Update position by velocity over time
+    birdYAxis += velocity; // Update position by velocity over time
 
     // Clamping birdYAxis to ensure it remains within screen bounds
     if (birdYAxis > 1) {
@@ -83,9 +88,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
+    initPrefs();
     bitcoinManager = BitcoinManager(
       screenWidth: 0,
       screenHeight: 0,
@@ -97,6 +104,23 @@ class _HomePageState extends State<HomePage> {
         bitcoinManager.screenHeight = MediaQuery.of(context).size.height;
       }
     });
+  }
+
+  void initPrefs() async {
+    await SharedPreferencesHelper.init();
+    int savedHighScore = await SharedPreferencesHelper.getHighScore();
+    setState(() {
+      highScore = savedHighScore;
+    });
+  }
+
+  void updateHighScore() {
+    if (score > highScore) {
+      setState(() {
+        highScore = score;
+        SharedPreferencesHelper.setHighScore(highScore);
+      });
+    }
   }
 
   @override
@@ -122,7 +146,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void resetPhysicsState() {
-    velocity = 0;  // Reset velocity when game is resumed
+    velocity = 0; // Reset velocity when game is resumed
   }
 
   void updateGame() {
@@ -147,8 +171,9 @@ class _HomePageState extends State<HomePage> {
       score += collidedCount *
           10; // Increment score by 10 for each bitcoin collected
 
-      if (birdYAxis >= 1  || checkObstacleCollision(context, birdYAxis, birdWidth, birdHeight, obstacles))
-        {
+      if (birdYAxis >= 1 ||
+          checkObstacleCollision(
+              context, birdYAxis, birdWidth, birdHeight, obstacles)) {
         jumpTimer?.cancel();
         showDialogGameOver(context, score, restartGame);
       }
@@ -172,8 +197,10 @@ class _HomePageState extends State<HomePage> {
       initialHeight = 0.5;
       obstacles.clear();
       bitcoinManager.bitcoinPositions.clear();
-      score = 0; // Reset score
+     // Reset score
       gameHasStarted = false;
+      updateHighScore();
+      score = 0;
     });
   }
 
@@ -221,12 +248,28 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   //!isDesktop() ? const Positioned(top: 0, child: LowerBackGround()) :
                   const BackgroundImageWeb(),
-                 // const Positioned(bottom: 0, child: BackGround()),
+                  // const Positioned(bottom: 0, child: BackGround()),
+                  Positioned(
+                    top: MediaQuery.of(context).size.width *
+                        0.3,
+                    left: MediaQuery.of(context).size.width *
+                        0.5,
+                    child: Text(
+                      '$score',
+                      style: const TextStyle(
+                        color: Colors.orangeAccent,
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   Positioned(
                     top: MediaQuery.of(context).size.height * birdYAxis,
                     left: MediaQuery.of(context).size.width *
                         0.4, // Horizontal center
-                    child: MyBird(showSpeedBoost: showSpeedBoost,),
+                    child: MyBird(
+                      showSpeedBoost: showSpeedBoost,
+                    ),
                   ),
                   if (!gameHasStarted) TapHintAnimation(birdYAxi: birdYAxis),
                   ...obstacles.map((obs) => obs.build(context)).toList(),
@@ -237,17 +280,36 @@ class _HomePageState extends State<HomePage> {
                             child: const BitCoin(),
                           ))
                       .toList(),
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: Text(
+                      'High Score: $highScore',
+                      style: const TextStyle(color: Colors.deepOrangeAccent, fontSize: 24),
+                    ),
+                  ),
+                  Positioned(
+                    top: 20,
+                    right: 20,
+                    child: IconButton(
+                      onPressed: () {
+                       Navigator.push(context, MaterialPageRoute(builder: (context) => BirdGridPage()));
+                      },
+                      icon: const Icon(Icons.settings),
+                      tooltip: 'Bird Gallery',
+                    ),
+                  ),
                 ],
               ),
             ),
-            Container(
+            /* Container(
               width: double.infinity,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xFF212121),
-                    Color(0xFF2196F3),
-                    Color(0xFF212121),
+                   Colors.green,
+                    Colors.lightGreenAccent,
+                  Colors.green,
                   ],
                   // Define the stops for color transition
                   stops: [0.0, 0.5, 1.0],
@@ -267,6 +329,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+
+            */
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
