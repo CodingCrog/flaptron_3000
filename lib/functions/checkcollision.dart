@@ -46,7 +46,7 @@ int checkBitCoinCollision(BuildContext context, double birdYAxis,
 
   int count = 0;
   bitcoinPositions.removeWhere((pos) {
-    bool collides = birdRect.contains(pos);
+    bool collides = birdRect.overlaps(Rect.fromCircle(center: pos, radius: 10));
     if (collides) {
       count++; // Increment count for each collision
     }
