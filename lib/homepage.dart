@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   AudioManager audioManager = AudioManager();
   double birdYAxis = 0.5; // Initialize position of bird
   double time = 0;
-  double initialHeight = 1;
+  double initialHeight = 0.5;
   bool gameHasStarted = false;
   Timer? jumpTimer;
   List<Obstacle> obstacles = [];
@@ -41,9 +41,10 @@ class _HomePageState extends State<HomePage> {
   bool isGamePaused = false;
   int score = 0;
   late BitcoinManager bitcoinManager;
-  double gravity = 9.8; // Earth's gravity in m/s^2
+  double gravity = 1.2; // 120% of display per square-second
   double velocity = 0;
-  double jumpStrength = -50;
+  double fallSpeedLimit = 0.5; // 50% of display per second
+  double jumpStrength = -0.5; // 50% of display per second
   double obstacleSpeedMultiplier = 1.0;
   bool isFallingPaused = false;
   bool showSpeedBoost = false;
@@ -78,14 +79,10 @@ class _HomePageState extends State<HomePage> {
       velocity =
           0; // Ensure velocity is zeroed to prevent any downward movement
     }
-    birdYAxis += velocity; // Update position by velocity over time
+    velocity > fallSpeedLimit ? velocity = fallSpeedLimit : velocity;
+    birdYAxis += velocity * deltaTime; // Update position by velocity over time
 
-    // Clamping birdYAxis to ensure it remains within screen bounds
-    if (birdYAxis > 1) {
-      birdYAxis = 1;
-    } else if (birdYAxis < 0) {
-      birdYAxis = 0;
-    }
+    birdYAxis = birdYAxis.clamp(0.0, 1.0);
   }
 
 
@@ -158,10 +155,7 @@ class _HomePageState extends State<HomePage> {
       bitcoinManager.spawnRandomBitcoin();
     }
 
-    double height = -4.5 * time * time + 1.5 * time;
     setState(() {
-      double newY = initialHeight - height;
-      birdYAxis = newY.clamp(0.0, 1.0);
       moveObstacles(context, obstacles, obstacleSpeedMultiplier);
       bitcoinManager.moveBitcoins();
 
