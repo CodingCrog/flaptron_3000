@@ -5,11 +5,11 @@ import '../components/obstacles.dart';
 bool checkObstacleCollision(BuildContext context, double birdYAxis,
     double birdWidth, double birdHeight, List<Obstacle> obstacles) {
   double padding = 10.0; // Reduce the collision size by 5 pixels on all sides
-  Rect birdRect = Rect.fromLTWH(
-    MediaQuery.of(context).size.width * 0.4 + padding,
-    MediaQuery.of(context).size.height * birdYAxis + padding,
-    birdWidth - 2 * padding,
-    birdHeight - 2 * padding,
+  Rect birdRect = Rect.fromCenter(
+    center: Offset(MediaQuery.of(context).size.width * 0.4,
+        MediaQuery.of(context).size.height * birdYAxis),
+    width: birdWidth - 2 * padding,
+    height: birdHeight - 2 * padding,
   );
 
   for (Obstacle obstacle in obstacles) {
