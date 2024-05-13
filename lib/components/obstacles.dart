@@ -6,6 +6,7 @@ class Obstacle extends StatelessWidget {
   final double topHeight; // Height of the top obstacle
   final double bottomHeight; // Height of the bottom obstacle
   final double xPos; // Horizontal position of the obstacle
+  final double width;
 
   // Expanded list of colors including futuristic pink and purple
   final List<Color> colors = const [
@@ -14,17 +15,18 @@ class Obstacle extends StatelessWidget {
     Color(0xFF4A0074), // Dark Grey
     Color(0xFF1C3AFF),
     Colors.white,
-    Colors.black,// Futuristic Pink
+    Colors.black, // Futuristic Pink
     //Color(0xFF9C27B0), // Futuristic Purple
   ];
 
-  const Obstacle({
-    Key? key,
-    required this.gapHeight,
-    required this.topHeight,
-    required this.bottomHeight,
-    required this.xPos,
-  }) : super(key: key);
+  const Obstacle(
+      {Key? key,
+      required this.gapHeight,
+      required this.topHeight,
+      required this.bottomHeight,
+      required this.xPos,
+      required this.width})
+      : super(key: key);
 
   // Function to get a random gradient
   List<Color> getRandomGradient() {
@@ -36,8 +38,8 @@ class Obstacle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topGradient = getRandomGradient();
-    final bottomGradient = getRandomGradient();
+    //final topGradient = getRandomGradient();
+    //final bottomGradient = getRandomGradient();
 
     return Positioned(
       left: xPos,
@@ -64,7 +66,7 @@ class Obstacle extends StatelessWidget {
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
-            width: 60, // Obstacle width
+            width: width, // Obstacle width
             height: bottomHeight,
             decoration: BoxDecoration(
               border: Border.all(
