@@ -16,6 +16,7 @@ void generateObstacle(BuildContext context, List<Obstacle> obstacles) {
     topHeight: obstacleTopHeight,
     bottomHeight: obstacleBottomHeight,
     xPos: screenWidth,
+    width: 60,
   ));
 }
 
@@ -33,6 +34,7 @@ void moveObstacles(
       topHeight: obs.topHeight,
       bottomHeight: obs.bottomHeight,
       xPos: newXPos,
+      width: 60,
     );
 
     // Remove obstacle if it moves off screen
