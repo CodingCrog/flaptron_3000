@@ -1,31 +1,34 @@
 import 'dart:math';
 import 'dart:ui';
 
+import '../components/bitcoin.dart';
+
 class BitcoinManager {
-  final List<Offset> bitcoinPositions = [];
+  final List<BitCoin> bitcoins = [];
   double screenWidth;
   double screenHeight;
-  double speedMultiplier = 1.0;  // Default speed multiplier
+  double speedMultiplier = 0.5; // Default speed multiplier
 
   BitcoinManager({required this.screenWidth, required this.screenHeight});
 
   void spawnBitcoin(double xPos, double yPos) {
-    bitcoinPositions.add(Offset(xPos, yPos));
+    bitcoins.add(BitCoin(pos: Offset(xPos, yPos)));
   }
 
-  void moveBitcoins() {
-    for (int i = 0; i < bitcoinPositions.length; i++) {
-      bitcoinPositions[i] =
-          Offset(bitcoinPositions[i].dx - 5 * speedMultiplier, bitcoinPositions[i].dy);  // Apply the speed multiplier
+/*  void moveBitcoins() {
+    for (int i = 0; i < bitcoins.length; i++) {
+      bitcoins[i] = BitCoin(
+          center: Offset(bitcoins[i].center.dx - 5 * speedMultiplier,
+              bitcoins[i].center.dy)); // Apply the speed multiplier
+      bitcoins[i].center.dx <= 100 ? bitcoins.removeAt(i) : bitcoins;
     }
-    bitcoinPositions.removeWhere((pos) => pos.dx < -80);
-  }
+  }*/
 
   void spawnRandomBitcoin() {
-    Random rand = Random();
-    double yPos = rand.nextDouble() * (screenHeight - 50);
-    double xPos = screenWidth + rand.nextDouble() * 200;
-    spawnBitcoin(xPos, yPos);
+    double rand = Random().nextDouble();
+    double yPos = (rand + 1) / 3;
+    double xPos = screenWidth + rand * 200;
+    spawnBitcoin(xPos, screenHeight * yPos);
   }
 
   void setSpeedMultiplier(double multiplier) {
