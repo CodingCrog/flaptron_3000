@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'package:flaptron_3000/pages/bird_grid_page.dart';
 import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
@@ -8,8 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flaptron_3000/level/background.dart';
 import 'package:flaptron_3000/components/bird.dart';
-import 'package:flaptron_3000/level/lowerbackground.dart';
-import 'components/bitcoin.dart';
 import 'components/obstacles.dart';
 import 'level/background_web.dart';
 import 'services/audiomanager.dart';
@@ -29,42 +26,45 @@ class _HomePageState extends State<HomePage> {
   AudioManager audioManager = AudioManager();
   double birdYAxis = 0.5; // Initialize position of bird
   double time = 0;
-  double initialHeight = 0.5;
   bool gameHasStarted = false;
   Timer? jumpTimer;
   List<Obstacle> obstacles = [];
   double obstacleXPos = 1.0;
-  static const double birdWidth = 40.0;
-  static const double birdHeight = 40.0;
   bool showCoinAnimation = false;
   Offset coinAnimationPosition = Offset.zero;
   bool isGamePaused = false;
   int score = 0;
   late BitcoinManager bitcoinManager;
   double gravity = 1.0; // 120% of display per square-second
-  double velocity = 0;
+  double velocity = -0.2;
   double fallSpeedLimit = 0.5; // 50% of display per second
   double jumpStrength = -0.4; // 50% of display per second
-  double obstacleSpeedMultiplier = 1.0;
+  double obstacleSpeedMultiplier = 0.5;
   bool isFallingPaused = false;
   bool showSpeedBoost = false;
   int highScore = 0;
+  MyBird bird = MyBird(
+      //showSpeedBoost: showSpeedBoost,
+      );
 
   void increaseObstacleSpeed() {
     setState(() {
-      obstacleSpeedMultiplier = 4; // Increase speed significantly
+      obstacleSpeedMultiplier = 2; // Increase speed significantly
       bitcoinManager.setSpeedMultiplier(obstacleSpeedMultiplier);
       showSpeedBoost = true;
       isFallingPaused = true; // Ensure this is set to true to pause falling
+      bird.action(showSpeedBoost);
 
       // Schedule a future to reset the falling and speed after a short duration
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(milliseconds: 200), () {
         if (mounted) {
           setState(() {
-            obstacleSpeedMultiplier = 1.0; // Reset to normal speed
-            bitcoinManager.setSpeedMultiplier(1.0); // Reset bitcoin speed
+            obstacleSpeedMultiplier = 0.5; // Reset to normal speed
+            bitcoinManager.setSpeedMultiplier(
+                obstacleSpeedMultiplier); // Reset bitcoin speed
             isFallingPaused = false; // Resume normal falling
             showSpeedBoost = false;
+            bird.action(showSpeedBoost);
           });
         }
       });
@@ -82,19 +82,17 @@ class _HomePageState extends State<HomePage> {
     velocity > fallSpeedLimit ? velocity = fallSpeedLimit : velocity;
     birdYAxis += velocity * deltaTime; // Update position by velocity over time
 
-    birdYAxis = birdYAxis.clamp(0.0, 1.0);
+    bird.pos = Offset(bird.pos.dx, birdYAxis.clamp(0.0, 1.0));
   }
-
 
   @override
   void initState() {
     super.initState();
     initPrefs();
     bitcoinManager = BitcoinManager(
-      screenWidth: 0,
-      screenHeight: 0,
+      screenWidth: 400,
+      screenHeight: 800,
     );
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         bitcoinManager.screenWidth = MediaQuery.of(context).size.width;
@@ -132,9 +130,8 @@ class _HomePageState extends State<HomePage> {
       audioManager.pause();
       isGamePaused = true;
     } else {
-      resetPhysicsState();
-      jumpTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
-        updatePhysics(0.080);
+      jumpTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+        updatePhysics(0.016);
         updateGame();
       });
       audioManager.play("sounds/MegaMan2.mp3");
@@ -142,32 +139,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void resetPhysicsState() {
-    velocity = 0; // Reset velocity when game is resumed
-  }
-
   void updateGame() {
-    time += 0.04;
+    time += 16;
 
     // Periodically spawn bitcoins
-    if (Random().nextDouble() > 0.95) {
-      // Approximately every 2 seconds at 50fps
+    //if (Random().nextDouble() > 0.95) {
+    // Approximately every 2 seconds at 50fps
+    if ((time % (320 / obstacleSpeedMultiplier)) == 0) {
       bitcoinManager.spawnRandomBitcoin();
     }
+    //}
 
     setState(() {
       moveObstacles(context, obstacles, obstacleSpeedMultiplier);
-      bitcoinManager.moveBitcoins();
+
+      checkCollision(bird, bitcoinManager, obstacles);
 
       // Update score based on bitcoin collision
-      int collidedCount = checkBitCoinCollision(context, birdYAxis, birdWidth,
-          birdHeight, bitcoinManager.bitcoinPositions);
-      score += collidedCount *
-          10; // Increment score by 10 for each bitcoin collected
+      score = (bird.coins * 10) as int;
 
-      if (birdYAxis >= 1 ||
-          checkObstacleCollision(
-              context, birdYAxis, birdWidth, birdHeight, obstacles)) {
+      if (bird.pos.dy >= 1 || bird.dead) {
         jumpTimer?.cancel();
         showDialogGameOver(context, score, restartGame);
       }
@@ -181,17 +172,17 @@ class _HomePageState extends State<HomePage> {
   void jump() {
     velocity = jumpStrength;
     time = 0; // Reset time each jump
-    initialHeight = birdYAxis; // Reset initialHeight to current position
   }
 
   void restartGame() {
     setState(() {
+      bird.reset();
+      velocity = -0.2;
       birdYAxis = 0.5; // Reset bird position
       time = 0; // Reset time
-      initialHeight = 0.5;
       obstacles.clear();
-      bitcoinManager.bitcoinPositions.clear();
-     // Reset score
+      bitcoinManager.bitcoins.clear();
+      // Reset score
       gameHasStarted = false;
       updateHighScore();
       score = 0;
@@ -201,14 +192,16 @@ class _HomePageState extends State<HomePage> {
   void startGame() {
     if (!gameHasStarted) {
       audioManager.play("sounds/MegaMan2.mp3");
+      bird.reset();
+      velocity = -0.2;
       gameHasStarted = true;
       obstacles.clear();
-      bitcoinManager.bitcoinPositions.clear(); // Clear previous bitcoins
+      bitcoinManager.bitcoins.clear(); // Clear previous bitcoins
       generateObstacle(context, obstacles); // Generate the first obstacle
       bitcoinManager.spawnRandomBitcoin(); // Spawn the first bitcoin
       jumpTimer?.cancel();
-      jumpTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
-        updatePhysics(0.080); // Assume each frame is approximately 16ms
+      jumpTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+        updatePhysics(0.016); // Assume each frame is approximately 16ms
         updateGame();
       });
     }
@@ -220,57 +213,32 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (!gameHasStarted) {
-          startGame();
-        } else if (!isGamePaused) {
-          jump();
-        }
-      },
-      onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta != null && details.primaryDelta! < 0) {
-          // Only increase speed if swiping right
-          increaseObstacleSpeed();
-        }
-      },
-      child: Scaffold(
-        body: Column(
-          children: [
-            Expanded(
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTapDown: (details) {
+                if (!gameHasStarted) {
+                  startGame();
+                } else if (!isGamePaused) {
+                  jump();
+                }
+              },
+              onHorizontalDragUpdate: (details) {
+                if (details.primaryDelta != null && details.primaryDelta! < 0) {
+                  // Only increase speed if swiping right
+                  increaseObstacleSpeed();
+                }
+              },
               child: Stack(
                 children: [
                   //!isDesktop() ? const Positioned(top: 0, child: LowerBackGround()) :
                   const BackgroundImageWeb(),
                   // const Positioned(bottom: 0, child: BackGround()),
-
-                  //the gif seems to be bigger than the actual bird
                   Positioned(
-                    top: MediaQuery.of(context).size.height * birdYAxis -
-                        50,
-                    left: MediaQuery.of(context).size.width * 0.4 -
-                        50, // Horizontal center
-                    width: 100,
-                    height: 100,
-                    child: MyBird(
-                      showSpeedBoost: showSpeedBoost,
-                    ),
-                  ),
-                  if (!gameHasStarted) TapHintAnimation(birdYAxi: birdYAxis),
-                  ...obstacles.map((obs) => obs.build(context)).toList(),
-                  ...bitcoinManager.bitcoinPositions
-                      .map((pos) => Positioned(
-                            left: pos.dx - 50,
-                            top: pos.dy - 50,
-                            width: 100,
-                            height: 100,
-                            child: const BitCoin(),
-                          ))
-                      .toList(),
-                  Positioned(
-                    top: 50,
-                    left: MediaQuery.of(context).size.width *
-                        0.5,
+                    top: MediaQuery.of(context).size.width * 0.3,
+                    left: MediaQuery.of(context).size.width * 0.5,
                     child: Text(
                       '$score',
                       style: const TextStyle(
@@ -280,18 +248,54 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  //the gif seems to be bigger than the actual bird
+                  Positioned(
+                    top: bitcoinManager.screenHeight * bird.pos.dy - 50,
+                    left: bitcoinManager.screenWidth * bird.pos.dx -
+                        50, // Horizontal center
+                    width: 100,
+                    height: 100,
+                    child: bird,
+                  ),
+                  if (!gameHasStarted) TapHintAnimation(birdYAxi: bird.pos.dy),
+                  ...obstacles.map((obs) => obs.build(context)).toList(),
+                  ...bitcoinManager.bitcoins
+                      .map((bitcoin) => Positioned(
+                            left: bitcoin.pos.dx - 50,
+                            top: bitcoin.pos.dy - 50,
+                            width: 100,
+                            height: 100,
+                            child: bitcoin,
+                          ))
+                      .toList(),
                   Positioned(
                     top: 20,
                     left: 20,
                     child: Text(
                       'High Score: $highScore',
-                      style: const TextStyle(color: Colors.orange, fontSize: 14),
+                      style: const TextStyle(
+                          color: Colors.deepOrangeAccent, fontSize: 24),
+                    ),
+                  ),
+                  Positioned(
+                    top: 20,
+                    right: 20,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BirdGridPage()));
+                      },
+                      icon: const Icon(Icons.settings),
+                      tooltip: 'Bird Gallery',
                     ),
                   ),
                 ],
               ),
             ),
-            /* Container(
+          ),
+          /* Container(
               width: double.infinity,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -320,45 +324,29 @@ class _HomePageState extends State<HomePage> {
             ),
 
             */
-            Row(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  width: 80,
-                ),
-                IconButton(
-                  icon: Icon(audioManager.isMuted
-                      ? Icons.volume_off
-                      : Icons.volume_up),
-                  onPressed: () {
-                    setState(() {
-                      audioManager.toggleMute();
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: Icon(isGamePaused ? Icons.play_arrow : Icons.pause),
-                  onPressed: () {
-                    setState(() {
-                      togglePauseGame();
-                    });
-                  },
-                ),
-                const SizedBox(
-                  width: 80,
-                ),
-                IconButton(
-                  tooltip: 'Bird Gallery',
-                  icon: const Icon(Icons.diamond_outlined, color: Colors.pinkAccent,),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => BirdGridPage()));
-                  },
-                ),
-
-              ],
-            ),
-          ],
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(
+                    audioManager.isMuted ? Icons.volume_off : Icons.volume_up),
+                onPressed: () {
+                  setState(() {
+                    audioManager.toggleMute();
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(isGamePaused ? Icons.play_arrow : Icons.pause),
+                onPressed: () {
+                  setState(() {
+                    togglePauseGame();
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
