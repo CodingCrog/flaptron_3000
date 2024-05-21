@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
       checkCollision(bird, bitcoinManager, obstacles);
 
       // Update score based on bitcoin collision
-      score = (bird.coins * 10) as int;
+      score = (bird.coins * 10).toInt();
 
       if (bird.pos.dy >= 1 || bird.dead) {
         jumpTimer?.cancel();
