@@ -233,26 +233,11 @@ class _HomePageState extends State<HomePage> {
               },
               child: Stack(
                 children: [
-                  //!isDesktop() ? const Positioned(top: 0, child: LowerBackGround()) :
                   const BackgroundImageWeb(),
-                  // const Positioned(bottom: 0, child: BackGround()),
-                  Positioned(
-                    top: MediaQuery.of(context).size.width * 0.3,
-                    left: MediaQuery.of(context).size.width * 0.5,
-                    child: Text(
-                      '$score',
-                      style: const TextStyle(
-                        color: Colors.orangeAccent,
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  //the gif seems to be bigger than the actual bird
                   Positioned(
                     top: bitcoinManager.screenHeight * bird.pos.dy - 50,
-                    left: bitcoinManager.screenWidth * bird.pos.dx -
-                        50, // Horizontal center
+                    left: bitcoinManager.screenWidth * bird.pos.dx - 50,
+                    // Horizontal center
                     width: 100,
                     height: 100,
                     child: bird,
@@ -278,73 +263,60 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Positioned(
-                    top: 20,
-                    right: 20,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BirdGridPage()));
-                      },
-                      icon: const Icon(Icons.settings),
-                      tooltip: 'Bird Gallery',
+                    top: MediaQuery.of(context).size.width * 0.3,
+                    left: MediaQuery.of(context).size.width * 0.5,
+                    child: Text(
+                      '$score',
+                      style: const TextStyle(
+                        color: Colors.orangeAccent,
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          /* Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                   Colors.green,
-                    Colors.lightGreenAccent,
-                  Colors.green,
-                  ],
-                  // Define the stops for color transition
-                  stops: [0.0, 0.5, 1.0],
-                  // Define the direction of the gradient, top to bottom
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(audioManager.isMuted
+                      ? Icons.volume_off
+                      : Icons.volume_up),
+                  onPressed: () {
+                    setState(() {
+                      audioManager.toggleMute();
+                    });
+                  },
                 ),
-              ),
-              child: Center(
-                child: Text(
-                  'Score: $score',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                IconButton(
+                  icon: Icon(isGamePaused ? Icons.play_arrow : Icons.pause),
+                  onPressed: () {
+                    setState(() {
+                      togglePauseGame();
+                    });
+                  },
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BirdGridPage()));
+                  },
+                  icon: const Icon(
+                    Icons.diamond_outlined,
+                    color: Colors.pink,
                   ),
+                  tooltip: 'Bird Gallery',
                 ),
-              ),
+              ],
             ),
-
-            */
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                    audioManager.isMuted ? Icons.volume_off : Icons.volume_up),
-                onPressed: () {
-                  setState(() {
-                    audioManager.toggleMute();
-                  });
-                },
-              ),
-              IconButton(
-                icon: Icon(isGamePaused ? Icons.play_arrow : Icons.pause),
-                onPressed: () {
-                  setState(() {
-                    togglePauseGame();
-                  });
-                },
-              ),
-            ],
           ),
         ],
       ),
