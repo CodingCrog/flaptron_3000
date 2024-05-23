@@ -5,7 +5,6 @@ import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flaptron_3000/level/background.dart';
 import 'package:flaptron_3000/components/bird.dart';
 import 'components/obstacles.dart';
 import 'level/background_web.dart';
@@ -39,36 +38,62 @@ class _HomePageState extends State<HomePage> {
   double velocity = -0.2;
   double fallSpeedLimit = 0.5; // 50% of display per second
   double jumpStrength = -0.4; // 50% of display per second
-  double obstacleSpeedMultiplier = 0.5;
+  late double obstacleSpeedMultiplier = startObstacleSpeedMultiplier;
+  final double startObstacleSpeedMultiplier = 0.5;
   bool isFallingPaused = false;
   bool showSpeedBoost = false;
   int highScore = 0;
+  final int fps = 60;
+  late final int frameTime =
+      (1000 / fps).round(); // defines the time each frame has
+  late final int bitcoinSpawnTime = frameTime *
+      fps *
+      2; // defines the spawn time of bitcoins. the frametime is multiplied by the fps which should come up to 1000ms this times 2 is 2 seconds
+  final double obstacleIncrementPerCoin =
+      0.025; // the increment for each coin the player collects
   MyBird bird = MyBird(
       //showSpeedBoost: showSpeedBoost,
       );
 
-  void increaseObstacleSpeed() {
+  bool isSpeedBoostActive = false;
+  void speedBoost() {
+    if (isSpeedBoostActive) return;
+    isSpeedBoostActive = true;
+    final currentSpeed = obstacleSpeedMultiplier;
+
+    updateObstacleSpeed(
+        speed: currentSpeed * 4); // Increase speed significantly
     setState(() {
-      obstacleSpeedMultiplier = 2; // Increase speed significantly
-      bitcoinManager.setSpeedMultiplier(obstacleSpeedMultiplier);
       showSpeedBoost = true;
       isFallingPaused = true; // Ensure this is set to true to pause falling
       bird.action(showSpeedBoost);
+    });
 
-      // Schedule a future to reset the falling and speed after a short duration
-      Future.delayed(const Duration(milliseconds: 200), () {
-        if (mounted) {
-          setState(() {
-            obstacleSpeedMultiplier = 0.5; // Reset to normal speed
-            bitcoinManager.setSpeedMultiplier(
-                obstacleSpeedMultiplier); // Reset bitcoin speed
-            isFallingPaused = false; // Resume normal falling
-            showSpeedBoost = false;
-            bird.action(showSpeedBoost);
-          });
-        }
+    // Schedule a future to reset the falling and speed after a short duration
+    Future.delayed(const Duration(milliseconds: 200), () {
+      updateObstacleSpeed(speed: currentSpeed);
+      setState(() {
+        isFallingPaused = false; // Resume normal falling
+        showSpeedBoost = false;
+        bird.action(showSpeedBoost);
+        isSpeedBoostActive = false;
       });
     });
+  }
+
+  void resetObstacleSpeed() {
+    updateObstacleSpeed(speed: startObstacleSpeedMultiplier);
+  }
+
+  void updateObstacleSpeed({double? speed}) {
+    if (mounted) {
+      setState(() {
+        obstacleSpeedMultiplier =
+            speed ?? startObstacleSpeedMultiplier; // Reset to normal speed
+        bitcoinManager
+            .setSpeedMultiplier(obstacleSpeedMultiplier); // Reset bitcoin speed
+      });
+    }
   }
 
   void updatePhysics(double deltaTime) {
@@ -130,25 +155,20 @@ class _HomePageState extends State<HomePage> {
       audioManager.pause();
       isGamePaused = true;
     } else {
-      jumpTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
-        updatePhysics(0.016);
-        updateGame();
-      });
+      setJumptimer();
       audioManager.play("sounds/MegaMan2.mp3");
       isGamePaused = false;
     }
   }
 
   void updateGame() {
-    time += 16;
+    time += frameTime;
 
     // Periodically spawn bitcoins
-    //if (Random().nextDouble() > 0.95) {
-    // Approximately every 2 seconds at 50fps
-    if ((time % (320 / obstacleSpeedMultiplier)) == 0) {
+    // Spawn every 2 seconds at 50fps
+    if ((time % bitcoinSpawnTime) == 0) {
       bitcoinManager.spawnRandomBitcoin();
     }
-    //}
 
     setState(() {
       moveObstacles(context, obstacles, obstacleSpeedMultiplier);
@@ -158,11 +178,24 @@ class _HomePageState extends State<HomePage> {
       // Update score based on bitcoin collision
       score = (bird.coins * 10).toInt();
 
+      increaseObstacleSpeedIfRequired();
+
       if (bird.pos.dy >= 1 || bird.dead) {
         jumpTimer?.cancel();
         showDialogGameOver(context, score, restartGame);
       }
     });
+  }
+
+  double lastIncrementCoin = 0;
+  void increaseObstacleSpeedIfRequired() {
+    // prevent multiple speed boosts for the same coin increment
+    if (bird.coins == lastIncrementCoin) {
+      return;
+    }
+    final newSpeed = obstacleSpeedMultiplier + obstacleIncrementPerCoin;
+    updateObstacleSpeed(speed: newSpeed);
+    lastIncrementCoin = bird.coins;
   }
 
   void toggleSound() {
@@ -171,40 +204,48 @@ class _HomePageState extends State<HomePage> {
 
   void jump() {
     velocity = jumpStrength;
-    time = 0; // Reset time each jump
+    // time = 0; // Reset time each jump
   }
 
   void restartGame() {
-    setState(() {
-      bird.reset();
-      velocity = -0.2;
-      birdYAxis = 0.5; // Reset bird position
-      time = 0; // Reset time
-      obstacles.clear();
-      bitcoinManager.bitcoins.clear();
-      // Reset score
-      gameHasStarted = false;
-      updateHighScore();
-      score = 0;
-    });
+    updateHighScore();
+    gameHasStarted = false;
+    resetGameStats();
+    setState(() {});
+  }
+
+  void resetGameStats() {
+    bird.reset();
+    resetObstacleSpeed();
+    velocity = -0.2;
+    birdYAxis = 0.5; // Reset bird position
+    time = 0; // Reset time
+    obstacles.clear();
+    bitcoinManager.bitcoins.clear();
+    score = 0;
+    lastIncrementCoin = 0;
   }
 
   void startGame() {
     if (!gameHasStarted) {
+      resetGameStats();
       audioManager.play("sounds/MegaMan2.mp3");
-      bird.reset();
-      velocity = -0.2;
       gameHasStarted = true;
-      obstacles.clear();
-      bitcoinManager.bitcoins.clear(); // Clear previous bitcoins
       generateObstacle(context, obstacles); // Generate the first obstacle
       bitcoinManager.spawnRandomBitcoin(); // Spawn the first bitcoin
-      jumpTimer?.cancel();
-      jumpTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
-        updatePhysics(0.016); // Assume each frame is approximately 16ms
-        updateGame();
-      });
+      setJumptimer();
     }
+  }
+
+  void setJumptimer() {
+    jumpTimer?.cancel();
+
+    final deltaTime =
+        frameTime / 1000; // Assume each frame is approximately 16ms
+    jumpTimer = Timer.periodic(Duration(milliseconds: frameTime), (timer) {
+      updatePhysics(deltaTime);
+      updateGame();
+    });
   }
 
   bool isDesktop() {
@@ -228,7 +269,7 @@ class _HomePageState extends State<HomePage> {
               onHorizontalDragUpdate: (details) {
                 if (details.primaryDelta != null && details.primaryDelta! < 0) {
                   // Only increase speed if swiping right
-                  increaseObstacleSpeed();
+                  speedBoost();
                 }
               },
               child: Stack(
