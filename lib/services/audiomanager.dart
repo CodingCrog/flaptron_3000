@@ -13,6 +13,10 @@ class AudioManager {
   Future<void> pause() async {
     await _player.pause();
   }
+  
+  Future<void> resume() async {
+    await _player.resume();
+  }
 
   void toggleMute() {
     _isMuted = !_isMuted;

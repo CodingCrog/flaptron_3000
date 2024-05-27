@@ -15,27 +15,10 @@ class BirdWidget extends StatelessWidget {
 
   final controller = GifController();
 
-  void onObstacleCollision() {
-  //  bird.dead = true;
-  }
-
-  void onCoinCollision() {
-   // bird.coins += 1;
-  }
-
-  void action(dynamic data) {
-    notify.value = data as bool;
-  }
-
-  void reset() {
-  // bird.dead = false;
-  //  bird.coins = 0.0;
-  //  bird.pos = Offset(bird.screenXPos, 0.5);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      color: Colors.transparent,
       child: Stack(
         children: [
           GifView.asset(

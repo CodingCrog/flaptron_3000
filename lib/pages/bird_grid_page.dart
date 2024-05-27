@@ -3,56 +3,52 @@ import 'package:flaptron_3000/model/bird_card.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+final List<BirdCard> birds = [
+  BirdCard(
+    title: 'HatBird',
+    subtitle:
+        'Donned with a magical hat, this bird starts your journey with style.',
+    imageUrl: 'https://raw.seadn.io/files/373c9268ffccf1fae459e7133c4ceca7.gif',
+    // 'https://ipfs.io/ipfs/bafybeiefkakrj57ngw4ox3uubjhtvoyti6zb7d7cbyy5quxmqnvcejzzim/1',
+    price: 15.99,
+    nft:
+        'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/1',
+  ),
+  BirdCard(
+    title: 'CoinBird',
+    subtitle:
+        'Gathers coins with a 1.5x multiplier, a treasure seeker’s best friend.',
+    imageUrl: 'https://raw.seadn.io/files/60c51b39331af5c0efc2c4bbc1ea1119.gif',
+    //  'https://ipfs.io/ipfs/bafybeigjtmdq4w2twwt4t63h2a6p3azomx7dh3y5llz722mabcnkprxv2e/4',
+    price: 12.99,
+    nft:
+        'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/4/',
+  ),
+  BirdCard(
+    title: 'RedBird',
+    subtitle: 'Fierce and fiery, shatters obstacles with unmatched fury.',
+    imageUrl: 'https://raw.seadn.io/files/ecda7491a9792e7b5e9cfc88e869a9a0.gif',
+    // 'https://ipfs.io/ipfs/bafybeid7zbj3iyj4ypjuo4wwshvkegf52fx45wajqwebgrzqyez77pgcf4/3',
+    price: 18.99,
+    nft:
+        'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/2/',
+  ),
+  BirdCard(
+      title: 'SuperBird',
+      subtitle:
+          'Unrivalled speed, soaring through challenges at blazing velocities.',
+      imageUrl:
+          'https://raw.seadn.io/files/75114ecd57c85ef009257a3596238cf8.gif',
+      //'https://ipfs.io/ipfs/bafybeigftziffeifqv4mmv4g2ki37hxp7g5yg2wrtmy36wrpmolh77y4jy/2',
+      price: 16.99,
+      nft:
+          'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/3/'),
+];
+
 class BirdGridPage extends StatelessWidget {
   BirdGridPage({super.key});
 
-  final List<BirdCard> birds = [
-    BirdCard(
-      title: 'HatBird',
-      subtitle:
-          'Donned with a magical hat, this bird starts your journey with style.',
-      imageUrl:
-          'https://raw.seadn.io/files/373c9268ffccf1fae459e7133c4ceca7.gif',
-      // 'https://ipfs.io/ipfs/bafybeiefkakrj57ngw4ox3uubjhtvoyti6zb7d7cbyy5quxmqnvcejzzim/1',
-      price: 15.99,
-      nft:
-          'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/1',
-    ),
-    BirdCard(
-      title: 'CoinBird',
-      subtitle:
-          'Gathers coins with a 1.5x multiplier, a treasure seeker’s best friend.',
-      imageUrl:
-          'https://raw.seadn.io/files/60c51b39331af5c0efc2c4bbc1ea1119.gif',
-      //  'https://ipfs.io/ipfs/bafybeigjtmdq4w2twwt4t63h2a6p3azomx7dh3y5llz722mabcnkprxv2e/4',
-      price: 12.99,
-      nft:
-          'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/4/',
-    ),
-    BirdCard(
-      title: 'RedBird',
-      subtitle: 'Fierce and fiery, shatters obstacles with unmatched fury.',
-      imageUrl:
-          'https://raw.seadn.io/files/ecda7491a9792e7b5e9cfc88e869a9a0.gif',
-      // 'https://ipfs.io/ipfs/bafybeid7zbj3iyj4ypjuo4wwshvkegf52fx45wajqwebgrzqyez77pgcf4/3',
-      price: 18.99,
-      nft:
-          'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/2/',
-    ),
-    BirdCard(
-        title: 'SuperBird',
-        subtitle:
-            'Unrivalled speed, soaring through challenges at blazing velocities.',
-        imageUrl:
-            'https://raw.seadn.io/files/75114ecd57c85ef009257a3596238cf8.gif',
-        //'https://ipfs.io/ipfs/bafybeigftziffeifqv4mmv4g2ki37hxp7g5yg2wrtmy36wrpmolh77y4jy/2',
-        price: 16.99,
-        nft:
-            'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/3/'),
-  ];
-
   Future<void> _launchUrl(String filePath) async {
-
     if (!await launchUrlString(filePath)) {
       throw Exception('Could not launch $filePath');
     }
@@ -162,7 +158,8 @@ class BirdGridPage extends StatelessWidget {
                           top: 0,
                           right: 0,
                           child: IconButton(
-                            icon: const Icon(Icons.diamond_outlined, color : Colors.pinkAccent),
+                            icon: const Icon(Icons.diamond_outlined,
+                                color: Colors.pinkAccent),
                             onPressed: () async {
                               await _launchUrl(birds[index].nft);
                             },

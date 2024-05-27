@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPreferencesHelper {
+class LocalStorage {
   static SharedPreferences? _preferences;
 
   static Future init() async {
@@ -8,12 +8,10 @@ class SharedPreferencesHelper {
   }
 
   static Future setHighScore(int value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('highScore', value);
+    await _preferences?.setInt('highScore', value);
   }
 
-  static Future<int> getHighScore() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('highScore') ?? 0;
+  static int getHighScore() {
+    return _preferences?.getInt('highScore') ?? 0;
   }
 }

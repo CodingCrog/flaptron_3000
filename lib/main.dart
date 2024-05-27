@@ -5,7 +5,7 @@ import 'homepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferencesHelper.init();
+  await LocalStorage.init();
   runApp(const MyApp());
 }
 
@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
-
     );
   }
 }
