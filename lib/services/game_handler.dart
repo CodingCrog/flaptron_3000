@@ -70,6 +70,11 @@ class GameHandler extends ChangeNotifier {
     }
   }
 
+  void toggleMute(){
+    audioManager.toggleMute();
+    notifyListeners();
+  }
+
   void pauseGame() {
     gameState = GameState.PAUSED;
     audioManager.pause();

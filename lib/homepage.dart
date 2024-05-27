@@ -90,8 +90,8 @@ class _HomePageState extends State<HomePage> {
                         ...gameHandler.obstacleManager.obstacles,
                         ...gameHandler.bitcoinManager.bitcoins
                             .map((bitcoin) => Positioned(
-                                  left: bitcoin.pos.dx,
-                                  top: bitcoin.pos.dy,
+                                  left: bitcoin.pos.dx - 50,
+                                  top: bitcoin.pos.dy - 50,
                                   width: 100,
                                   height: 100,
                                   child: bitcoin,
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                             ? Icons.volume_off
                             : Icons.volume_up),
                         onPressed: () {
-                          gameHandler.audioManager.toggleMute();
+                          gameHandler.toggleMute();
                         },
                       ),
                       IconButton(

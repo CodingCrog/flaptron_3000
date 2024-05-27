@@ -15,21 +15,21 @@ bool checkObstacleCollision(
   Rect birdRect = Rect.fromCenter(
     center: Offset(size.width * bird.pos.dx + bird.width / 2,
         size.height * bird.pos.dy + bird.height / 2),
-    width: bird.width - 2 * padding,
-    height: bird.height - 2 * padding,
+    width: bird.width / 2,
+    height: bird.height / 2,
   );
   final obstacles = obstacleManager.obstacles;
   for (Obstacle obstacle in obstacles) {
     Rect topObstacleRect = Rect.fromLTWH(
-      obstacle.xPos - obstacle.width / 2,
+      obstacle.xPos + padding,
       0,
       obstacle.width - 2 * padding,
-      obstacle.topHeight - 2 * padding,
+      obstacle.topHeight - padding,
     );
 
     Rect bottomObstacleRect = Rect.fromLTWH(
-      obstacle.xPos - obstacle.width / 2,
-      size.height - obstacle.bottomHeight + 2 * padding,
+      obstacle.xPos + padding,
+      size.height - obstacle.bottomHeight + padding,
       obstacle.width - 2 * padding,
       obstacle.bottomHeight,
     );
@@ -46,8 +46,7 @@ int checkBitCoinCollision(
     {required Bird bird, required BitcoinManager bitcoinManager}) {
   double padding = 10.0; // Reduce the collision size by 5 pixels on all sides
   Rect birdRect = Rect.fromCenter(
-    center: Offset(size.width * bird.pos.dx + bird.width / 2,
-        size.height * bird.pos.dy + bird.height / 2),
+    center: Offset(size.width * bird.pos.dx, size.height * bird.pos.dy),
     width: bird.width - 2 * padding,
     height: bird.height - 2 * padding,
   );
@@ -56,7 +55,7 @@ int checkBitCoinCollision(
 
   for (var bitcoin in bitcoinManager.bitcoins) {
     final bitcoinRect = Rect.fromCircle(
-        center: Offset(bitcoin.pos.dx + 40, bitcoin.pos.dy + 40), radius: 40);
+        center: Offset(bitcoin.pos.dx, bitcoin.pos.dy), radius: 40);
     final collide = birdRect.overlaps(bitcoinRect);
     if (collide) {
       collidedBitcoins.add(bitcoin);
