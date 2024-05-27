@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                         const BackgroundImageWeb(),
                         Positioned(
                           top: size.height * gameHandler.player.bird.pos.dy,
-                          left: size.height * gameHandler.player.bird.pos.dx,
+                          left: size.width * gameHandler.player.bird.pos.dx,
                           child: BirdWidget(bird: gameHandler.player.bird),
                         ),
                         if (!gameHandler.isPlaying)
