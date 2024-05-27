@@ -1,13 +1,13 @@
 import 'package:flaptron_3000/level/background_nft.dart';
-import 'package:flaptron_3000/model/birds.dart';
+import 'package:flaptron_3000/model/bird_card.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class BirdGridPage extends StatelessWidget {
   BirdGridPage({super.key});
 
-  final List<Bird> birds = [
-    Bird(
+  final List<BirdCard> birds = [
+    BirdCard(
       title: 'HatBird',
       subtitle:
           'Donned with a magical hat, this bird starts your journey with style.',
@@ -18,7 +18,7 @@ class BirdGridPage extends StatelessWidget {
       nft:
           'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/1',
     ),
-    Bird(
+    BirdCard(
       title: 'CoinBird',
       subtitle:
           'Gathers coins with a 1.5x multiplier, a treasure seeker’s best friend.',
@@ -29,7 +29,7 @@ class BirdGridPage extends StatelessWidget {
       nft:
           'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/4/',
     ),
-    Bird(
+    BirdCard(
       title: 'RedBird',
       subtitle: 'Fierce and fiery, shatters obstacles with unmatched fury.',
       imageUrl:
@@ -39,7 +39,7 @@ class BirdGridPage extends StatelessWidget {
       nft:
           'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/2/',
     ),
-    Bird(
+    BirdCard(
         title: 'SuperBird',
         subtitle:
             'Unrivalled speed, soaring through challenges at blazing velocities.',

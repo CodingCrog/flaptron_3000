@@ -2,7 +2,7 @@ import 'package:flaptron_3000/services/bitcoinmanager.dart';
 import 'package:flutter/material.dart';
 
 import '../components/obstacles.dart';
-import '../components/bird.dart';
+import '../widgets/birdWidget.dart';
 
 bool checkObstacleCollision(BuildContext context, double birdYAxis,
     double birdWidth, double birdHeight, List<Obstacle> obstacles) {
@@ -75,7 +75,7 @@ int checkBitCoinCollision(BuildContext context, double birdYAxis,
 }
 
 void checkCollision(
-    MyBird bird, BitcoinManager btcManager, List<Obstacle> obstacles) {
+    BirdWidget bird, BitcoinManager btcManager, List<Obstacle> obstacles) {
   double padding = 10.0; // Reduce the collision size by 5 pixels on all sides
   Rect birdRect = Rect.fromCenter(
     center: Offset(btcManager.screenWidth * bird.pos.dx,

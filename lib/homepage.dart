@@ -5,7 +5,7 @@ import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flaptron_3000/components/bird.dart';
+import 'package:flaptron_3000/widgets/birdWidget.dart';
 import 'components/obstacles.dart';
 import 'level/background_web.dart';
 import 'services/audiomanager.dart';
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       2; // defines the spawn time of bitcoins. the frametime is multiplied by the fps which should come up to 1000ms this times 2 is 2 seconds
   final double obstacleIncrementPerCoin =
       0.025; // the increment for each coin the player collects
-  MyBird bird = MyBird(
+  BirdWidget bird = BirdWidget(
       //showSpeedBoost: showSpeedBoost,
       );
 
