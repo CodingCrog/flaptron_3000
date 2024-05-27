@@ -16,12 +16,15 @@ class BitcoinManager {
   }
 
   void moveBitcoins() {
+    List<BitCoin> removeabledBitcoins = [];
     for (var bitcoin in bitcoins) {
-      bitcoin.pos = Offset(
-          bitcoin.pos.dx - SpeedManager.speed, bitcoin.pos.dy);
+      bitcoin.pos = Offset(bitcoin.pos.dx - SpeedManager.speed, bitcoin.pos.dy);
       if (bitcoin.pos.dx <= 0) {
-        bitcoins.remove(bitcoin);
+        removeabledBitcoins.add(bitcoin);
       }
+    }
+    for (var removeBitcoin in bitcoins) {
+      removeabledBitcoins.remove(removeBitcoin);
     }
   }
 
