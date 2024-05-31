@@ -32,7 +32,7 @@ class Player {
     if (score > highScore) {
       highScore = score;
       LocalStorage.setHighScore(highScore);
-      await FirestoreService.updateHighScore(playerName, "$highScore");
+      await FireStoreService.updateHighScore(playerName, "$highScore");
     }
   }
 }

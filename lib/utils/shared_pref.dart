@@ -23,12 +23,20 @@ class LocalStorage {
     await _preferences?.setString('displayName', name);
   }
 
+  static Future<void> removeDisplayName() async {
+    await _preferences?.remove('displayName');
+  }
+
   static String? getDisplayName() {
     return _preferences?.getString('displayName');
   }
 
   static Future<void> setEmail(String email) async {
     await _preferences?.setString('email', email);
+  }
+
+  static Future<void> removeEmail() async {
+    await _preferences?.remove('email');
   }
 
   static String? getEmail() {

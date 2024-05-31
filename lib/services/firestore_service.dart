@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flaptron_3000/utils/shared_pref.dart';
 
-class FirestoreService {
+class FireStoreService {
 
   static Future<void> addUser(String name, String email, int? highScore) async {
     CollectionReference users =
@@ -54,12 +55,18 @@ class FirestoreService {
     }
   }
 
-  static Future<void> deleteUser(String playerName) async {
+  static Future<void> deleteUser() async {
+
     try {
+      String? playerName = LocalStorage.getDisplayName();
+      if(playerName == null) {
+        print("No player found");
+        return;
+      }
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('players')
           .where('name', isEqualTo: playerName)
-          .get();
+          .get(); //TODO: What if user have same name?
       if (querySnapshot.docs.isNotEmpty) {
         for (final docSnapshot in querySnapshot.docs) {
           final docRef = FirebaseFirestore.instance
