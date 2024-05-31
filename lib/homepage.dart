@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flaptron_3000/functions/gameoverdialog.dart';
+import 'package:flaptron_3000/functions/showdisplaynamedialog.dart';
 import 'package:flaptron_3000/model/bird.dart';
 import 'package:flaptron_3000/model/player.dart';
 import 'package:flaptron_3000/pages/bird_grid_page.dart';
 import 'package:flaptron_3000/services/game_handler.dart';
+import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,31 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     gameHandler.audioManager.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+       LocalStorage.init();
+      _initializeUser();
+      gameHandler.player.fetchUsers();
+    });
+  }
+
+  Future<void> _initializeUser() async {
+    String? name = LocalStorage.getDisplayName();
+    if (!LocalStorage.isDisplayNameSet()) {
+      Map<String, String?>? result = await showDisplayNameDialog(context);
+      if (result != null) {
+        String playerName = result['name'] ?? '';
+        String email = result['email'] ?? 'nomail@aon.com';
+        gameHandler.player.addUser(playerName, email, 0);
+        LocalStorage.setDisplayName(playerName);
+        LocalStorage.setEmail(email);
+        String? name = LocalStorage.getDisplayName();
+      }
+    }
   }
 
   bool isDesktop() {

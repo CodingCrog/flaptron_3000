@@ -52,7 +52,9 @@ class GameHandler extends ChangeNotifier {
     }
   }
 
-  void resetGame() {
+  void resetGame() async {
+
+  //  player.deleteUser('Ilija');
     gameState = GameState.MENU;
     SpeedManager.resetObstacleSpeed();
     physicsManager.resetPhysics(player);
@@ -122,7 +124,8 @@ class GameHandler extends ChangeNotifier {
     final obstacleCollision = checkObstacleCollision(
         bird: player.bird, obstacleManager: obstacleManager);
     if (obstacleCollision) {
-      player.setHighscore();
+      player.setHighscore("Test Player");
+      player.resetScore();
       player.resetScore();
       gameState = GameState.GAMEOVER;
       gameTimer?.cancel();
