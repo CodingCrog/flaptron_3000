@@ -4,6 +4,7 @@ import 'package:flaptron_3000/functions/showdisplaynamedialog.dart';
 import 'package:flaptron_3000/model/bird.dart';
 import 'package:flaptron_3000/model/player.dart';
 import 'package:flaptron_3000/pages/bird_grid_page.dart';
+import 'package:flaptron_3000/services/firestore_service.dart';
 import 'package:flaptron_3000/services/game_handler.dart';
 import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
@@ -44,23 +45,22 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
        LocalStorage.init();
       _initializeUser();
-      gameHandler.player.fetchUsers();
+      FirestoreService.fetchUsers();
     });
   }
 
   Future<void> _initializeUser() async {
-    String? name = LocalStorage.getDisplayName();
+    bool? isSet = LocalStorage.isDisplayNameSet();
     if (!LocalStorage.isDisplayNameSet()) {
       Map<String, String?>? result = await showDisplayNameDialog(context);
-      if (result != null) {
-        String playerName = result['name'] ?? '';
-        String email = result['email'] ?? 'nomail@aon.com';
-        gameHandler.player.addUser(playerName, email, 0);
-        LocalStorage.setDisplayName(playerName);
-        LocalStorage.setEmail(email);
-        String? name = LocalStorage.getDisplayName();
-      }
-    }
+      String playerName = result['name'] ?? '';
+      String email = result['email'] ?? 'nomail@aon.com';
+      FirestoreService.addUser(playerName, email, 0);
+      LocalStorage.setDisplayName(playerName);
+      LocalStorage.setEmail(email);
+      String? name = LocalStorage.getDisplayName();
+      bool? isSet = LocalStorage.isDisplayNameSet();
+        }
   }
 
   bool isDesktop() {

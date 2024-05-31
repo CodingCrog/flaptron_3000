@@ -53,8 +53,6 @@ class GameHandler extends ChangeNotifier {
   }
 
   void resetGame() async {
-
-  //  player.deleteUser('Ilija');
     gameState = GameState.MENU;
     SpeedManager.resetObstacleSpeed();
     physicsManager.resetPhysics(player);
