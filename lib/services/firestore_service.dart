@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {
+
   static Future<void> addUser(String name, String email, int? highScore) async {
     CollectionReference users =
         FirebaseFirestore.instance.collection('players');
@@ -17,7 +18,7 @@ class FirestoreService {
     }
   }
 
- static Future<void> fetchUsers() async {
+  static Future<void> fetchUsers() async {
     CollectionReference users =
         FirebaseFirestore.instance.collection('players');
     try {
@@ -30,7 +31,8 @@ class FirestoreService {
     }
   }
 
-  static Future<void> updateHighScore(String playerName, String newHighScore) async {
+  static Future<void> updateHighScore(
+      String? playerName, String newHighScore) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('players')
@@ -52,7 +54,7 @@ class FirestoreService {
     }
   }
 
- static Future<void> deleteUser(String playerName) async {
+  static Future<void> deleteUser(String playerName) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('players')

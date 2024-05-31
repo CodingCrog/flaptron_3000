@@ -27,14 +27,12 @@ class Player {
     score += value;
   }
 
-  void setHighscore(String playerName) async {
+  void setHighscore() async {
+    String? playerName = LocalStorage.getDisplayName();
     if (score > highScore) {
       highScore = score;
       LocalStorage.setHighScore(highScore);
       await FirestoreService.updateHighScore(playerName, "$highScore");
     }
   }
-
-
-
 }

@@ -47,29 +47,29 @@ Future<Map<String, String?>> showDisplayNameDialog(BuildContext context) async {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(null);
-            },
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.orangeAccent),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop({'name': name, 'email': email});
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.orangeAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
+          Center(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.grey.shade100,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 24.0),
+                backgroundColor: Colors.orangeAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop({'name': name, 'email': email});
+              },
+              child: const Text(
+                'START',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
               ),
             ),
-            child: const Text('Set Name'),
           ),
         ],
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 20),
       );
     },
   ).then((value) {

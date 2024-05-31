@@ -50,16 +50,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initializeUser() async {
-    bool? isSet = LocalStorage.isDisplayNameSet();
-    if (!LocalStorage.isDisplayNameSet()) {
+    bool? isLoggedIn = LocalStorage.getBool('isLoggedIn');
+    if (isLoggedIn == null) {
       Map<String, String?>? result = await showDisplayNameDialog(context);
       String playerName = result['name'] ?? '';
       String email = result['email'] ?? 'nomail@aon.com';
       FirestoreService.addUser(playerName, email, 0);
       LocalStorage.setDisplayName(playerName);
       LocalStorage.setEmail(email);
-      String? name = LocalStorage.getDisplayName();
-      bool? isSet = LocalStorage.isDisplayNameSet();
+      await LocalStorage.setBool('isLoggedIn', true);
         }
   }
 

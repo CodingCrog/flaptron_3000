@@ -24,7 +24,8 @@ class GameHandler extends ChangeNotifier {
   final int fps = WidgetsBinding
       .instance.platformDispatcher.views.first.display.refreshRate
       .round();
-  late final int frameTime = (1000 / fps).round(); // defines the time each frame has
+  late final int frameTime =
+      (1000 / fps).round(); // defines the time each frame has
   late final int bitcoinSpawnTime = frameTime *
       fps *
       2; // defines the spawn time of bitcoins. the frametime is multiplied by the fps which should come up to 1000ms this times 2 is 2 seconds
@@ -35,9 +36,13 @@ class GameHandler extends ChangeNotifier {
   bool isSpeedBoostActive = false; // used to check if the speed boost is active
 
   GameHandler(this.player);
+
   bool get isGamePaused => gameState == GameState.PAUSED;
+
   bool get isPlaying => gameState == GameState.PLAYING;
+
   bool get isGameOver => gameState == GameState.GAMEOVER;
+
   bool get isMenu => gameState == GameState.MENU;
 
   void startGame() {
@@ -70,7 +75,7 @@ class GameHandler extends ChangeNotifier {
     }
   }
 
-  void toggleMute(){
+  void toggleMute() {
     audioManager.toggleMute();
     notifyListeners();
   }
@@ -122,7 +127,7 @@ class GameHandler extends ChangeNotifier {
     final obstacleCollision = checkObstacleCollision(
         bird: player.bird, obstacleManager: obstacleManager);
     if (obstacleCollision) {
-      player.setHighscore("Test Player");
+      player.setHighscore();
       player.resetScore();
       player.resetScore();
       gameState = GameState.GAMEOVER;
