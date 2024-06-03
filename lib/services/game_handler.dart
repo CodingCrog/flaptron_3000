@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 enum GameState { MENU, PLAYING, GAMEOVER, PAUSED }
 
 class GameHandler extends ChangeNotifier {
-  final Player player;
+  final PlayerM player;
   double gameTime = 0.0;
   Timer? gameTimer; // is responsible for updating the game constantly (fps)
   GameState gameState = GameState.MENU;
@@ -127,7 +127,7 @@ class GameHandler extends ChangeNotifier {
     final obstacleCollision = checkObstacleCollision(
         bird: player.bird, obstacleManager: obstacleManager);
     if (obstacleCollision) {
-      player.setHighscore();
+      player.updateHighScore();
       player.resetScore();
       player.resetScore();
       gameState = GameState.GAMEOVER;

@@ -44,6 +44,9 @@ dependencies:
   cloud_firestore: ^4.17.5
   firebase_core: ^2.32.0
 
+  webon_kit_dart:
+    path: packages/webon_kit_dart
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

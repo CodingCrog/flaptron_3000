@@ -14,9 +14,9 @@ class Bird {
   Bird({
     this.birdCard,
     required this.gifPath,
-    this.height = 40,
-    this.width = 40,
-    required this.screenXPos,
+    this.height = 80,
+    this.width = 80,
+    this.screenXPos = 0.4,
     this.coins = 0.0,
     this.dead = false,
     Offset? pos,

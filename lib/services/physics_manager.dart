@@ -14,7 +14,7 @@ class PhysicsManager {
   double fallSpeedLimit = startFallSpeedLimit; // 50% of display per second
   double jumpStrength = startJumpStrength; // 50% of display per second
 
-  void updatePhysics(double deltaTime, bool isFallingPaused, Player player) {
+  void updatePhysics(double deltaTime, bool isFallingPaused, PlayerM player) {
     if (!isFallingPaused) {
       velocity +=
           gravity * deltaTime; // Increment velocity by gravity over time
@@ -29,7 +29,7 @@ class PhysicsManager {
     player.bird.pos = Offset(player.bird.pos.dx, dy);
   }
 
-  void resetPhysics(Player player) {
+  void resetPhysics(PlayerM player) {
     gravity = startGravity;
     velocity = startVelocity;
     fallSpeedLimit = startFallSpeedLimit;

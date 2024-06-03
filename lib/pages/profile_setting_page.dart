@@ -1,14 +1,14 @@
-import 'package:flaptron_3000/model/bird.dart';
+import 'package:flaptron_3000/model/nft_model.dart';
+import 'package:flaptron_3000/model/player.dart';
 import 'package:flaptron_3000/services/firestore_service.dart';
+import 'package:flaptron_3000/services/nft_service.dart';
 import 'package:flaptron_3000/utils/shared_pref.dart';
+import 'package:flaptron_3000/widgets/bouncable.dart';
 import 'package:flutter/material.dart';
-import 'package:gif_view/gif_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileSettingsPage extends StatefulWidget {
-  final Bird bird;
-
-  const ProfileSettingsPage({super.key, required this.bird});
+  final PlayerM player;
+  const ProfileSettingsPage({super.key, required this.player});
 
   @override
   _ProfileSettingsPageState createState() => _ProfileSettingsPageState();
@@ -26,23 +26,15 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   }
 
   Future<void> _deleteProfile() async {
-    try {
-      await FireStoreService.deleteUser();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove('displayName');
-      await prefs.remove('email');
-      await prefs.remove('highScore');
-      setState(() {
-        profileName = 'Unknown';
-        highScore = 0;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile deleted successfully')),
-      );
-      await LocalStorage.setBool('isLoggedIn', false);
-    } catch (e) {
-      print('Error deleting profile: $e');
-    }
+    setState(() {
+      profileName = 'Unknown';
+      highScore = 0;
+    });
+    FireStoreServiceM().deletePlayer(widget.player);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile deleted successfully')),
+    );
+    await LocalStorage.removePlayerId();
   }
 
   @override
@@ -53,17 +45,19 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
           children: [
             Center(
               child: CircleAvatar(
                 radius: 50,
                 child: ClipOval(
-                  child: GifView.asset(
-                    widget.bird.gifPath,
-                    width: 100,
-                    height: 100,
-                    frameRate: 10,
+                  child: ListenableBuilder(
+                    listenable: widget.player,
+                    builder: (context, _) => Image.network(
+                      widget.player.bird.gifPath,
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                 ),
               ),
@@ -79,6 +73,37 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 30),
+            if (widget.player.ethAddress != null) ...[
+              FutureBuilder<List<NFTModel>?>(
+                  future: NFTService.fetchNFTsByETHAddress(
+                      widget.player.ethAddress!),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                          height: 100,
+                          width: double.infinity,
+                          child: Center(child: CircularProgressIndicator()));
+                    } else if (snapshot.hasError) {
+                      return const Center(child: Text('Error'));
+                    }
+                    final nfts = snapshot.data;
+                    final count =
+                        MediaQuery.of(context).size.width ~/ NFTWidget.width;
+                    return GridView.count(
+                        crossAxisCount: count,
+                        shrinkWrap: true,
+                        children: nfts
+                                ?.map(
+                                  (e) => NFTWidget(
+                                    nft: e,
+                                    player: widget.player,
+                                  ),
+                                )
+                                .toList() ??
+                            []);
+                  }),
+              const SizedBox(height: 30),
+            ],
             ElevatedButton.icon(
               onPressed: _deleteProfile,
               icon: const Icon(Icons.delete),
@@ -95,5 +120,59 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
         ),
       ),
     );
+  }
+}
+
+class NFTWidget extends StatelessWidget {
+  const NFTWidget({super.key, required this.nft, required this.player});
+  final NFTModel nft;
+  final PlayerM player;
+  static double width = 200;
+  static double height = 200;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+        listenable: player,
+        builder: (context, _) {
+          final isSelected = nft.image_url == player.bird.gifPath;
+          return Bounceable(
+            onTap: () {
+              if (isSelected) return;
+              player.updateBird(nft.image_url);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                      width: 1.5,
+                      color: isSelected
+                          ? Colors.orangeAccent
+                          : Colors.transparent)),
+              height: height,
+              width: width,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      nft.image_url,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    nft.name,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(
+                    height: 2.5,
+                  ),
+                  Text(nft.description),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

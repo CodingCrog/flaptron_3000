@@ -7,6 +7,18 @@ class LocalStorage {
     _preferences = await SharedPreferences.getInstance();
   }
 
+  static String getPlayerId() {
+    return _preferences?.getString('playerId') ?? '';
+  }
+
+  static Future setPlayerId(String value) async {
+    await _preferences?.setString('playerId', value);
+  }
+
+  static Future removePlayerId() async {
+    await _preferences?.remove('playerId');
+  }
+
   static Future setHighScore(int value) async {
     await _preferences?.setInt('highScore', value);
   }
@@ -20,7 +32,7 @@ class LocalStorage {
   }
 
   static Future<void> setDisplayName(String name) async {
-    try{
+    try {
       await _preferences?.setString('displayName', name);
     } catch (e) {
       print('Error setting display name: $e');
