@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initializeUser() async {
-    final playerId = LocalStorage.getPlayerId();
+    final playerId = await LocalStorage.getPlayerId();
     final PlayerM? player;
     if (playerId.isEmpty) {
       Map<String, String?>? result = await showDisplayNameDialog(context);
