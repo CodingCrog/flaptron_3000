@@ -90,7 +90,9 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                     final count =
                         MediaQuery.of(context).size.width ~/ NFTWidget.width;
                     return GridView.count(
+                        primary: false,
                         crossAxisCount: count,
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         children: nfts
                                 ?.map(

@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webon_kit_dart/webon_kit_dart.dart';
 
 class LocalStorage {
   static SharedPreferences? _preferences;
@@ -7,16 +8,28 @@ class LocalStorage {
     _preferences = await SharedPreferences.getInstance();
   }
 
-  static String getPlayerId() {
-    return _preferences?.getString('playerId') ?? '';
+  static Future<String> getPlayerId() async {
+    if (WebonKitDart.isFallbackMode()) {
+      return _preferences?.getString('playerId') ?? '';
+    } else {
+      return WebonKitDart.getLocalStorage(key: 'playerId') as String? ?? '';
+    }
   }
 
   static Future setPlayerId(String value) async {
-    await _preferences?.setString('playerId', value);
+    if (WebonKitDart.isFallbackMode()) {
+      await _preferences?.setString('playerId', value);
+    } else {
+      await WebonKitDart.setLocalStorage(key: 'playerId', value: value);
+    }
   }
 
   static Future removePlayerId() async {
-    await _preferences?.remove('playerId');
+    if (WebonKitDart.isFallbackMode()) {
+      await _preferences?.remove('playerId');
+    } else {
+      await WebonKitDart.removeLocalStorage(key: 'playerId');
+    }
   }
 
   static Future setHighScore(int value) async {
