@@ -20,7 +20,11 @@ class LocalStorage {
   }
 
   static Future<void> setDisplayName(String name) async {
-    await _preferences?.setString('displayName', name);
+    try{
+      await _preferences?.setString('displayName', name);
+    } catch (e) {
+      print('Error setting display name: $e');
+    }
   }
 
   static Future<void> removeDisplayName() async {

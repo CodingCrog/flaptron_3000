@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class ProfileSettingsPage extends StatefulWidget {
   final Bird bird;
-   const ProfileSettingsPage({super.key, required this.bird});
+
+  const ProfileSettingsPage({super.key, required this.bird});
 
   @override
   _ProfileSettingsPageState createState() => _ProfileSettingsPageState();
@@ -18,7 +18,6 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   late String profileName;
   late int highScore;
 
-
   @override
   void initState() {
     super.initState();
@@ -27,19 +26,23 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   }
 
   Future<void> _deleteProfile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('displayName');
-    await prefs.remove('email');
-    await prefs.remove('highScore');
-    setState(() {
-      profileName = 'Unknown';
-      highScore = 0;
-    });
-    FireStoreService.deleteUser();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile deleted successfully')),
-    );
-    await LocalStorage.setBool('isLoggedIn', false);
+    try {
+      await FireStoreService.deleteUser();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('displayName');
+      await prefs.remove('email');
+      await prefs.remove('highScore');
+      setState(() {
+        profileName = 'Unknown';
+        highScore = 0;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile deleted successfully')),
+      );
+      await LocalStorage.setBool('isLoggedIn', false);
+    } catch (e) {
+      print('Error deleting profile: $e');
+    }
   }
 
   @override
