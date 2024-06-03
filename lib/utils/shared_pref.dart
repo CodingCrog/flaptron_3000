@@ -9,27 +9,15 @@ class LocalStorage {
   }
 
   static Future<String> getPlayerId() async {
-    if (WebonKitDart.isFallbackMode()) {
-      return _preferences?.getString('playerId') ?? '';
-    } else {
-      return WebonKitDart.getLocalStorage(key: 'playerId') as String? ?? '';
-    }
+    return _preferences?.getString('playerId') ?? '';
   }
 
   static Future setPlayerId(String value) async {
-    if (WebonKitDart.isFallbackMode()) {
-      await _preferences?.setString('playerId', value);
-    } else {
-      await WebonKitDart.setLocalStorage(key: 'playerId', value: value);
-    }
+    await _preferences?.setString('playerId', value);
   }
 
   static Future removePlayerId() async {
-    if (WebonKitDart.isFallbackMode()) {
-      await _preferences?.remove('playerId');
-    } else {
-      await WebonKitDart.removeLocalStorage(key: 'playerId');
-    }
+    await _preferences?.remove('playerId');
   }
 
   static Future setHighScore(int value) async {
