@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flaptron_3000/functions/checkcollision.dart';
 import 'package:flaptron_3000/model/player.dart';
@@ -8,6 +9,8 @@ import 'package:flaptron_3000/services/obstacle_manager.dart';
 import 'package:flaptron_3000/services/physics_manager.dart';
 import 'package:flaptron_3000/services/speed_manager.dart';
 import 'package:flutter/material.dart';
+
+import '../model/bird.dart';
 
 enum GameState { MENU, PLAYING, GAMEOVER, PAUSED }
 
@@ -119,7 +122,14 @@ class GameHandler extends ChangeNotifier {
     obstacleManager.moveObstacles();
     bitcoinManager.moveBitcoins();
 
-    // after moving the obstacles and bitcoins, check if the player has collected a coin or collided with an obstacle
+    // Check if the bird flies off the screen
+    final size =
+        MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
+    if (isBirdOffScreen(player.bird, size)) {
+      handleGameOver();
+    }
+
+    // After moving the obstacles and bitcoins, check if the player has collected a coin or collided with an obstacle
     final bitcoinCount = checkBitCoinCollision(
         bird: player.bird, bitcoinManager: bitcoinManager);
     increaseCount(bitcoinCount);
@@ -127,13 +137,26 @@ class GameHandler extends ChangeNotifier {
     final obstacleCollision = checkObstacleCollision(
         bird: player.bird, obstacleManager: obstacleManager);
     if (obstacleCollision) {
-      player.updateHighScore();
-      player.resetScore();
-      player.resetScore();
-      gameState = GameState.GAMEOVER;
-      gameTimer?.cancel();
+      handleGameOver();
     }
     notifyListeners();
+  }
+
+  bool isBirdOffScreen(Bird bird, Size screenSize) {
+    if (bird.pos.dy <= 0 ||
+        bird.pos.dy >= screenSize.height ||
+        bird.pos.dy >= 1 ||
+        bird.pos.dy >= screenSize.height) {
+      return true;
+    }
+    return false;
+  }
+
+  void handleGameOver() {
+    player.updateHighScore();
+    player.resetScore();
+    gameState = GameState.GAMEOVER;
+    gameTimer?.cancel();
   }
 
   void increaseCount(int bitcoinCount) {
