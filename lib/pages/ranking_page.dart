@@ -50,9 +50,9 @@ class RankingPageState extends State<RankingPage> {
                         : null,
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 8.0),
+                          horizontal: 2.0, vertical: 2.0),
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(player.bird.gifPath),
+                        backgroundImage: NetworkImage(player.bird.gifPath,),
                         radius: 30.0,
                       ),
                       title: Text(
