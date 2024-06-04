@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 class ProfileSettingsPage extends StatefulWidget {
   final PlayerM player;
+
   const ProfileSettingsPage({super.key, required this.player});
 
   @override
@@ -127,10 +128,11 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
 
 class NFTWidget extends StatelessWidget {
   const NFTWidget({super.key, required this.nft, required this.player});
+
   final NFTModel nft;
   final PlayerM player;
-  static double width = 200;
-  static double height = 200;
+  static double width = 150;
+  static double height = 150;
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +160,9 @@ class NFTWidget extends StatelessWidget {
                   Expanded(
                     child: Image.network(
                       nft.image_url,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.fitWidth,
                     ),
                   ),
                   const SizedBox(
