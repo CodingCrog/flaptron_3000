@@ -76,6 +76,8 @@ flutter:
     - assets/gifs/bitcoin.gif
     - assets/gifs/bird.gif
     - assets/gifs/bird1.gif
+    - assets/gifs/pink_bird.gif
+    - assets/gifs/pink_hit.gif
     - assets/gifs/background.gif
     - assets/gifs/background1.gif
     - assets/images/pipe.jpeg

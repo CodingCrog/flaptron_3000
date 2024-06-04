@@ -38,16 +38,19 @@ class RankingPageState extends State<RankingPage> {
             final players = snapshot.data!;
 
             return Padding(
-              padding: const EdgeInsets.only(left: 16.0,right: 16.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12.0),
               child: ListView.separated(
                 itemCount: players.length,
                 separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
                   final player = players[index];
                   return Container(
-                    color: player.id == widget.currentUserId ? Colors.orange[200] : null,
+                    color: player.id == widget.currentUserId
+                        ? Colors.yellow[200]
+                        : null,
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 8.0),
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(player.bird.gifPath),
                         radius: 30.0,
@@ -63,13 +66,24 @@ class RankingPageState extends State<RankingPage> {
                         'Highscore: ${player.highScore}',
                         style: const TextStyle(fontSize: 16.0),
                       ),
-                      trailing: Text(
-                        '#${index + 1}',
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey,
-                        ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (index == 0)
+                            const Icon(Icons.emoji_events, color: Colors.orange),
+
+                          Text(
+                            '#${index + 1}',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                              color: index < 3
+                                  ? Colors.orange
+                                  : Colors
+                                      .blueGrey,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
