@@ -4,6 +4,7 @@ import 'package:flaptron_3000/functions/showdisplaynamedialog.dart';
 import 'package:flaptron_3000/model/player.dart';
 import 'package:flaptron_3000/pages/bird_grid_page.dart';
 import 'package:flaptron_3000/pages/profile_setting_page.dart';
+import 'package:flaptron_3000/pages/ranking_page.dart';
 import 'package:flaptron_3000/services/firestore_service.dart';
 import 'package:flaptron_3000/services/game_handler.dart';
 import 'package:flaptron_3000/utils/shared_pref.dart';
@@ -49,7 +50,9 @@ class _HomePageState extends State<HomePage> {
       String email = result['email'] ?? 'nomail@aon.com';
       player = await FireStoreServiceM()
           .addPlayer(username: playerName, email: email);
-      await LocalStorage.setPlayerId(playerId);
+      if (player != null) {
+        await LocalStorage.setPlayerId(player.id);
+      }
     } else {
       player = await FireStoreServiceM().getPlayer(playerId);
     }
@@ -151,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                  padding: const EdgeInsets.only(left: 50.0, right: 35),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -185,6 +188,20 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.pink,
                         ),
                         tooltip: 'Bird Gallery',
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          gameHandler!.pauseGame();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>  RankingPage(currentUserId: gameHandler!.player.id,)));
+                        },
+                        icon: const Icon(
+                          Icons.leaderboard,
+                          color: Colors.pink,
+                        ),
+                        tooltip: 'Ranking',
                       ),
                       IconButton(
                         onPressed: () {
