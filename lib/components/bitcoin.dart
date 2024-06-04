@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:lottie/lottie.dart';
 
-class BitCoin extends StatefulWidget {
-  BitCoin({required this.pos, super.key});
+// ignore: must_be_immutable
+class BitCoin extends StatelessWidget {
   Offset pos;
+  BitCoin({required this.pos, super.key});
 
-  @override
-  State<BitCoin> createState() => _BitCoinState();
-}
-
-class _BitCoinState extends State<BitCoin> {
   final controller = GifController();
 
   @override

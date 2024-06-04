@@ -1,0 +1,3 @@
+[submodule "packages/webon_kit_dart"]
+	path = packages/webon_kit_dart
+	url = https://github.com/nomo-app/webon-kit-dart.git

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flaptron_3000/functions/checkcollision.dart';
 import 'package:flaptron_3000/model/player.dart';
@@ -9,10 +10,12 @@ import 'package:flaptron_3000/services/physics_manager.dart';
 import 'package:flaptron_3000/services/speed_manager.dart';
 import 'package:flutter/material.dart';
 
+import '../model/bird.dart';
+
 enum GameState { MENU, PLAYING, GAMEOVER, PAUSED }
 
 class GameHandler extends ChangeNotifier {
-  final Player player;
+  final PlayerM player;
   double gameTime = 0.0;
   Timer? gameTimer; // is responsible for updating the game constantly (fps)
   GameState gameState = GameState.MENU;
@@ -24,7 +27,8 @@ class GameHandler extends ChangeNotifier {
   final int fps = WidgetsBinding
       .instance.platformDispatcher.views.first.display.refreshRate
       .round();
-  late final int frameTime = (1000 / fps).round(); // defines the time each frame has
+  late final int frameTime =
+      (1000 / fps).round(); // defines the time each frame has
   late final int bitcoinSpawnTime = frameTime *
       fps *
       2; // defines the spawn time of bitcoins. the frametime is multiplied by the fps which should come up to 1000ms this times 2 is 2 seconds
@@ -35,9 +39,13 @@ class GameHandler extends ChangeNotifier {
   bool isSpeedBoostActive = false; // used to check if the speed boost is active
 
   GameHandler(this.player);
+
   bool get isGamePaused => gameState == GameState.PAUSED;
+
   bool get isPlaying => gameState == GameState.PLAYING;
+
   bool get isGameOver => gameState == GameState.GAMEOVER;
+
   bool get isMenu => gameState == GameState.MENU;
 
   void startGame() {
@@ -52,7 +60,7 @@ class GameHandler extends ChangeNotifier {
     }
   }
 
-  void resetGame() {
+  void resetGame() async {
     gameState = GameState.MENU;
     SpeedManager.resetObstacleSpeed();
     physicsManager.resetPhysics(player);
@@ -70,7 +78,7 @@ class GameHandler extends ChangeNotifier {
     }
   }
 
-  void toggleMute(){
+  void toggleMute() {
     audioManager.toggleMute();
     notifyListeners();
   }
@@ -114,7 +122,14 @@ class GameHandler extends ChangeNotifier {
     obstacleManager.moveObstacles();
     bitcoinManager.moveBitcoins();
 
-    // after moving the obstacles and bitcoins, check if the player has collected a coin or collided with an obstacle
+    // Check if the bird flies off the screen
+    final size =
+        MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
+    if (isBirdOffScreen(player.bird, size)) {
+      handleGameOver();
+    }
+
+    // After moving the obstacles and bitcoins, check if the player has collected a coin or collided with an obstacle
     final bitcoinCount = checkBitCoinCollision(
         bird: player.bird, bitcoinManager: bitcoinManager);
     increaseCount(bitcoinCount);
@@ -122,12 +137,26 @@ class GameHandler extends ChangeNotifier {
     final obstacleCollision = checkObstacleCollision(
         bird: player.bird, obstacleManager: obstacleManager);
     if (obstacleCollision) {
-      player.setHighscore();
-      player.resetScore();
-      gameState = GameState.GAMEOVER;
-      gameTimer?.cancel();
+      handleGameOver();
     }
     notifyListeners();
+  }
+
+  bool isBirdOffScreen(Bird bird, Size screenSize) {
+    if (bird.pos.dy <= 0 ||
+        bird.pos.dy >= screenSize.height ||
+        bird.pos.dy >= 1 ||
+        bird.pos.dy >= screenSize.height) {
+      return true;
+    }
+    return false;
+  }
+
+  void handleGameOver() {
+    player.updateHighScore();
+    player.resetScore();
+    gameState = GameState.GAMEOVER;
+    gameTimer?.cancel();
   }
 
   void increaseCount(int bitcoinCount) {

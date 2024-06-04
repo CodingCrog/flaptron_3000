@@ -3,7 +3,6 @@ import 'package:gif_view/gif_view.dart';
 import 'package:lottie/lottie.dart';
 import '../model/bird.dart';
 
-
 class BirdWidget extends StatelessWidget {
   final Bird bird;
   final ValueNotifier<bool> notify = ValueNotifier(false);
@@ -21,12 +20,10 @@ class BirdWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Stack(
         children: [
-          GifView.asset(
+          Image.network(
             bird.gifPath,
-            controller: controller,
             width: bird.width.toDouble(),
             height: bird.height.toDouble(),
-            frameRate: 10,
           ),
           ValueListenableBuilder(
             valueListenable: notify,

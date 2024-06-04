@@ -4,12 +4,12 @@ import 'package:lottie/lottie.dart';
 void showDialogGameOver(BuildContext context, int score, Function restartGame) {
   showDialog(
     context: context,
-    barrierDismissible: false, // Prevents closing the dialog by tapping outside of it
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Colors.grey.shade100,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0), // Optional: adds rounded corners to the dialog box
+          borderRadius: BorderRadius.circular(20.0),
         ),
         title: Center(
           child: Lottie.asset(
@@ -17,7 +17,7 @@ void showDialogGameOver(BuildContext context, int score, Function restartGame) {
             width: 160,
             height: 160,
             frameRate: const FrameRate(20),
-            repeat: false,// Optional: Adjust based on your animation's needs
+            repeat: false,
           ),
         ),
         content: Text(
@@ -33,25 +33,25 @@ void showDialogGameOver(BuildContext context, int score, Function restartGame) {
             child: TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: Colors.grey.shade100, padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0), // Adds padding around the text
-                backgroundColor: Colors.orangeAccent, // This ensures the text color contrasts with the button color
-                shape: RoundedRectangleBorder( // Rounded corners for the button
+                backgroundColor: Colors.orangeAccent,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                restartGame(); // Restart game logic
+                Navigator.of(context).pop();
+                restartGame();
               },
               child: const Text(
                 'Play Again',
                 style: TextStyle(
-                  fontSize: 16, // Adjust the font size according to your design
+                  fontSize: 16,
                 ),
               ),
             ),
           ),
         ],
-        actionsAlignment: MainAxisAlignment.center, // Center aligns the button within the actions area
+        actionsAlignment: MainAxisAlignment.center,
       );
     },
   );
