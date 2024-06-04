@@ -50,6 +50,7 @@ class GameHandler extends ChangeNotifier {
 
   void startGame() {
     if (gameState == GameState.MENU) {
+      player.resetScore();
       SpeedManager.resetObstacleSpeed();
       physicsManager.resetPhysics(player);
       gameState = GameState.PLAYING;
@@ -154,13 +155,12 @@ class GameHandler extends ChangeNotifier {
 
   void handleGameOver() {
     player.updateHighScore();
-    player.resetScore();
     gameState = GameState.GAMEOVER;
     gameTimer?.cancel();
   }
 
   void increaseCount(int bitcoinCount) {
-    player.incresase(bitcoinCount);
+    player.increase(bitcoinCount);
     increaseSpeedIfRequired(bitcoinCount);
   }
 

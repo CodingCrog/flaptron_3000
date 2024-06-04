@@ -3,42 +3,7 @@ import 'package:flaptron_3000/services/firestore_service.dart';
 import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flutter/foundation.dart';
 
-// class Player {
-//   String name;
-//   int score;
-//   Bird bird;
-//   int highScore;
-
-//   Player({required this.name, required this.score, required this.bird})
-//       : highScore = LocalStorage.getHighScore();
-
-//   void increasementScore() {
-//     score++;
-//   }
-
-//   void decreaseScore() {
-//     score--;
-//   }
-
-//   void resetScore() {
-//     score = 0;
-//   }
-
-//   void incresase(int value) {
-//     score += value;
-//   }
-
-//   void setHighscore() async {
-//     String? playerName = LocalStorage.getDisplayName();
-//     if (score > highScore) {
-//       highScore = score;
-//       LocalStorage.setHighScore(highScore);
-//       // await FireStoreService.updateHighScore(playerName, "$highScore");
-//     }
-//   }
-// }
-
-class PlayerM  with ChangeNotifier{
+class PlayerM with ChangeNotifier {
   final String id;
   final String username;
   final String? email;
@@ -56,9 +21,6 @@ class PlayerM  with ChangeNotifier{
       this.highScore = 0})
       : score = 0;
 
-  void increasementScore() {
-    score++;
-  }
 
   void decreaseScore() {
     score--;
@@ -68,8 +30,9 @@ class PlayerM  with ChangeNotifier{
     score = 0;
   }
 
-  void incresase(int value) {
+  void increase(int value) {
     score += value;
+    notifyListeners();
   }
 
   void updateHighScore() async {

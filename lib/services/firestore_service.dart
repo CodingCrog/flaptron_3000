@@ -113,34 +113,42 @@ class FireStoreServiceM implements FireStorePlayerService {
     }
   }
 
-
   @override
   Future<List<PlayerM>> getTopPlayers() async {
-    CollectionReference users = FirebaseFirestore.instance.collection('players');
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('players');
     List<PlayerM> topPlayers = [];
 
-    final QuerySnapshot result = await users
-        .orderBy('highScore', descending: true)
-        .limit(100)
-        .get();
+    final QuerySnapshot result =
+        await users.orderBy('highScore', descending: true).limit(100).get();
 
     for (var doc in result.docs) {
       final playerData = doc.data() as Map<String, dynamic>;
       playerData.putIfAbsent('id', () => doc.id);
 
-
-
-      if(playerData case {
-        'highScore': int _,
-        'username': String _,
-        'birdPath': String _,
-      }){
+      if (playerData
+          case {
+            'highScore': int _,
+            'username': String _,
+            'birdPath': String _,
+          }) {
         topPlayers.add(PlayerM.fromJson(playerData));
       }
-
-
     }
 
     return topPlayers;
+  }
+
+  Future<int> getHighScore(String playerId) async {
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('players');
+    try {
+      final res = await users.doc(playerId).get();
+      final playerData = res.data() as Map<String, dynamic>;
+      return playerData['highScore'] ?? 0;
+    } catch (e) {
+      debugPrint(e.toString());
+      return 0;
+    }
   }
 }

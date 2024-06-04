@@ -195,7 +195,10 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>  RankingPage(currentUserId: gameHandler!.player.id,)));
+                                  builder: (context) => RankingPage(
+                                        currentUserId: gameHandler!.player.id,
+                                      )));
+                          gameHandler!.resetGame();
                         },
                         icon: const Icon(
                           Icons.leaderboard,
@@ -212,6 +215,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) => ProfileSettingsPage(
                                         player: gameHandler!.player,
                                       )));
+                          gameHandler!.resetGame();
                         },
                         icon: const Icon(
                           Icons.settings,
