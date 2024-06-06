@@ -32,12 +32,14 @@ class GameHandler extends ChangeNotifier {
   bool isFallingPaused = false;
   bool isSpeedBoostActive = false;
 
-
-  GameHandler(this.player,this.screenSize);
+  GameHandler(this.player, this.screenSize);
 
   bool get isGamePaused => gameState == GameState.PAUSED;
+
   bool get isPlaying => gameState == GameState.PLAYING;
+
   bool get isGameOver => gameState == GameState.GAMEOVER;
+
   bool get isMenu => gameState == GameState.MENU;
 
   void startGame() {
@@ -110,17 +112,16 @@ class GameHandler extends ChangeNotifier {
     obstacleManager.moveObstacles(screenSize);
     bitcoinManager.moveBitcoins();
 
-
     if (isBirdOffScreen(player.bird)) {
       handleGameOver();
     }
 
     final bitcoinCount = checkBitCoinCollision(
-        bird: player.bird, bitcoinManager: bitcoinManager,size: screenSize);
+        bird: player.bird, bitcoinManager: bitcoinManager, size: screenSize);
     increaseCount(bitcoinCount);
 
     final obstacleCollision = checkObstacleCollision(
-        bird: player.bird, obstacleManager: obstacleManager,size: screenSize);
+        bird: player.bird, obstacleManager: obstacleManager, size: screenSize);
     if (obstacleCollision) {
       handleGameOver();
     }
@@ -129,7 +130,13 @@ class GameHandler extends ChangeNotifier {
   }
 
   bool isBirdOffScreen(Bird bird) {
-    return bird.pos.dy <= 0 || bird.pos.dy >= screenSize.height;
+    if (bird.pos.dy <= 0 ||
+        bird.pos.dy >= screenSize.height ||
+        bird.pos.dy >= 1 ||
+        bird.pos.dy >= screenSize.height) {
+      return true;
+    }
+    return false;
   }
 
   void handleGameOver() {
@@ -159,8 +166,7 @@ class GameHandler extends ChangeNotifier {
     isFallingPaused = true;
     final currentSpeed = SpeedManager.speedMultiplier;
 
-    SpeedManager.updateObstacleSpeed(
-        speed: currentSpeed * 4);
+    SpeedManager.updateObstacleSpeed(speed: currentSpeed * 4);
     notifyListeners();
 
     Future.delayed(const Duration(milliseconds: 200), () {
