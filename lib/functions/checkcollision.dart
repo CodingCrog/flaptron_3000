@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import '../components/obstacles.dart';
 
 bool checkObstacleCollision(
-    {required Bird bird, required ObstacleManager obstacleManager}) {
+    {required Bird bird, required ObstacleManager obstacleManager,required Size size}) {
   double padding = 10.0; // Reduce the collision size by 5 pixels on all sides
   Rect birdRect = Rect.fromCenter(
     center: Offset(size.width * bird.pos.dx + bird.width / 2,
@@ -43,7 +43,7 @@ bool checkObstacleCollision(
 }
 
 int checkBitCoinCollision(
-    {required Bird bird, required BitcoinManager bitcoinManager}) {
+    {required Bird bird, required BitcoinManager bitcoinManager,required Size size}) {
   double padding = 10.0; // Reduce the collision size by 5 pixels on all sides
   Rect birdRect = Rect.fromCenter(
     center: Offset(size.width * bird.pos.dx, size.height * bird.pos.dy),

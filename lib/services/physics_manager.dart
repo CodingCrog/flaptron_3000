@@ -2,39 +2,43 @@ import 'dart:ui';
 
 import 'package:flaptron_3000/model/player.dart';
 
-const double startGravity = 1.0; // 120% of display per square-second
-const double startVelocity = -0.2;
-const double startFallSpeedLimit = 0.5; // 50% of display per second
-const double startJumpStrength = -0.4; // 50% of display per second
-const Offset startPosition = Offset(0.4, 0.5); // in percentage of screen size
-
 class PhysicsManager {
-  double gravity = startGravity; // 120% of display per square-second
-  double velocity = startVelocity;
-  double fallSpeedLimit = startFallSpeedLimit; // 50% of display per second
-  double jumpStrength = startJumpStrength; // 50% of display per second
+  static const double defaultGravity = 1.0; // Gravity constant
+  static const double initialVelocity = -0.2; // Initial velocity
+  static const double maxFallSpeed = 0.5; // Maximum fall speed
+  static const double jumpVelocity = -0.4; // Jump velocity
+  static const Offset initialPosition = Offset(0.4, 0.5); // Initial position
+
+  double gravity;
+  double velocity;
+  final double fallSpeedLimit;
+  final double jumpStrength;
+
+  PhysicsManager({
+    this.gravity = defaultGravity,
+    this.velocity = initialVelocity,
+    this.fallSpeedLimit = maxFallSpeed,
+    this.jumpStrength = jumpVelocity,
+  });
 
   void updatePhysics(double deltaTime, bool isFallingPaused, PlayerM player) {
     if (!isFallingPaused) {
-      velocity +=
-          gravity * deltaTime; // Increment velocity by gravity over time
+      velocity += gravity * deltaTime;
+      if (velocity > fallSpeedLimit) {
+        velocity = fallSpeedLimit;
+      }
     } else {
-      velocity =
-          0; // Ensure velocity is zeroed to prevent any downward movement
+      velocity = 0;
     }
-    velocity > fallSpeedLimit ? velocity = fallSpeedLimit : velocity;
-    final dy = player.bird.pos.dy +
-        (velocity * deltaTime); // Update position by velocity over time
 
-    player.bird.pos = Offset(player.bird.pos.dx, dy);
+    final double newY = player.bird.pos.dy + (velocity * deltaTime);
+    player.bird.pos = Offset(player.bird.pos.dx, newY);
   }
 
   void resetPhysics(PlayerM player) {
-    gravity = startGravity;
-    velocity = startVelocity;
-    fallSpeedLimit = startFallSpeedLimit;
-    jumpStrength = startJumpStrength;
-    player.bird.pos = startPosition;
+    gravity = defaultGravity;
+    velocity = initialVelocity;
+    player.bird.pos = initialPosition;
   }
 
   void jump() {
