@@ -88,6 +88,7 @@ flutter:
     - assets/lottiefiles/coinanimation.json
     - assets/lottiefiles/speedboost.json
     - assets/images/background_web.png
+    - assets/images/background_web3.png
     - assets/images/background_web5.png
   #   - images/a_dot_ham.jpeg
 
