@@ -18,12 +18,20 @@ final defaultBird = NFTModel(
   token_standard: '',
 );
 
+final List<String> fatBirds = [
+  'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/5',
+  'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/7',
+  'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/6',
+  'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/8',
+];
+
 extension NFTModelExt on NFTModel {
   bool get isDefault => image_url == defaultBird.image_url;
 }
 
 class BirdGridPage extends StatelessWidget {
   const BirdGridPage({super.key, required this.gameHandler});
+
   final GameHandler gameHandler;
 
   Future<Map<NFTModel, bool>> _fetchNFTs() async {
