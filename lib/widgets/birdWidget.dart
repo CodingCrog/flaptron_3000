@@ -20,11 +20,19 @@ class BirdWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Stack(
         children: [
-          Image.network(
-            bird.gifPath,
-            width: bird.width.toDouble(),
-            height: bird.height.toDouble(),
-          ),
+          if (bird.gifPath.startsWith('assets/gifs/')) ...[
+            Image.asset(
+              bird.gifPath,
+              width: bird.width.toDouble(),
+              height: bird.height.toDouble(),
+            ),
+          ] else ...[
+            Image.network(
+              bird.gifPath,
+              width: bird.width.toDouble(),
+              height: bird.height.toDouble(),
+            ),
+          ],
           ValueListenableBuilder(
             valueListenable: notify,
             builder: (context, value, child) {
