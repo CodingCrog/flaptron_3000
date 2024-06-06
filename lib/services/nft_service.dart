@@ -10,7 +10,7 @@ class NFTService {
   static Future<List<NFTModel>?> fetchNFTsByETHAddress(
       String ethAddress) async {
     final url = polygon.replaceAll(
-        '{ethAddress}', '0x6142b865c26b663030bd454f07f8655bdb07cd5a');
+        '{ethAddress}', ethAddress);
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -19,10 +19,16 @@ class NFTService {
       final resMap = jsonDecode(response.body);
       final nfts = List<NFTModel>.from(
           resMap['nfts'].map((e) => NFTModel.fromJson(e)).toList());
+      nfts.removeWhere((e) => e.opensea_url == 'https://opensea.io/assets/matic/0xa2c05e8ed26a14d0c5190c45e9b7e5c650bb6465/1');
       return nfts;
     } catch (e) {
       print(e);
       return null;
     }
+  }
+
+  static Future<List<NFTModel>?> fetchAllNfts() async {
+    return await fetchNFTsByETHAddress(
+        '0x6142b865c26b663030bd454f07f8655bdb07cd5a');
   }
 }

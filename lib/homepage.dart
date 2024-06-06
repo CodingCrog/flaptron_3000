@@ -28,7 +28,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    screenSize = MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
+    screenSize =
+        MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeUser();
     });
@@ -44,10 +45,15 @@ class _HomePageState extends State<HomePage> {
     final playerId = await LocalStorage.getPlayerId();
     PlayerM? player;
     if (playerId.isEmpty) {
-      Map<String, String?>? result = await showDisplayNameDialog(context);
-      String playerName = result['name'] ?? '';
-      String email = result['email'] ?? 'nomail@aon.com';
-      player = await FireStoreServiceM().addPlayer(username: playerName, email: email);
+      player = await FireStoreServiceM().fetchPlayerForETHAddress();
+      if (player == null) {
+        Map<String, String?>? result = await showDisplayNameDialog(context);
+        String playerName = result['name'] ?? '';
+        String email = result['email'] ?? 'nomail@aon.com';
+        player = await FireStoreServiceM()
+            .addPlayer(username: playerName, email: email);
+      }
+
       if (player != null) {
         await LocalStorage.setPlayerId(player.id);
       }
@@ -74,7 +80,8 @@ class _HomePageState extends State<HomePage> {
       builder: (context, child) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if (gameHandler!.isGameOver) {
-            showDialogGameOver(context, gameHandler!.player.score, gameHandler!.resetGame);
+            showDialogGameOver(
+                context, gameHandler!.player.score, gameHandler!.resetGame);
           }
         });
 
@@ -98,7 +105,8 @@ class _HomePageState extends State<HomePage> {
                     }
                   },
                   onHorizontalDragUpdate: (details) {
-                    if (details.primaryDelta != null && details.primaryDelta! < 0) {
+                    if (details.primaryDelta != null &&
+                        details.primaryDelta! < 0) {
                       gameHandler!.boost();
                     }
                   },
@@ -106,29 +114,34 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       const BackgroundImageWeb(),
                       Positioned(
-                        top: screenSize.height * gameHandler!.player.bird.pos.dy,
-                        left: screenSize.width * gameHandler!.player.bird.pos.dx,
+                        top:
+                            screenSize.height * gameHandler!.player.bird.pos.dy,
+                        left:
+                            screenSize.width * gameHandler!.player.bird.pos.dx,
                         child: ListenableBuilder(
                           listenable: gameHandler!.player,
-                          builder: (context, _) => BirdWidget(bird: gameHandler!.player.bird),
+                          builder: (context, _) =>
+                              BirdWidget(bird: gameHandler!.player.bird),
                         ),
                       ),
                       if (!gameHandler!.isPlaying)
                         const TapHintAnimation(birdYAxi: .5),
                       ...gameHandler!.obstacleManager.obstacles,
-                      ...gameHandler!.bitcoinManager.bitcoins.map((bitcoin) => Positioned(
-                        left: bitcoin.pos.dx - 50,
-                        top: bitcoin.pos.dy - 50,
-                        width: 100,
-                        height: 100,
-                        child: bitcoin,
-                      )),
+                      ...gameHandler!.bitcoinManager.bitcoins
+                          .map((bitcoin) => Positioned(
+                                left: bitcoin.pos.dx - 50,
+                                top: bitcoin.pos.dy - 50,
+                                width: 100,
+                                height: 100,
+                                child: bitcoin,
+                              )),
                       Positioned(
                         top: 20,
                         left: 20,
                         child: Text(
                           'High Score: ${gameHandler!.player.highScore}',
-                          style: const TextStyle(color: Colors.deepOrangeAccent, fontSize: 24),
+                          style: const TextStyle(
+                              color: Colors.deepOrangeAccent, fontSize: 24),
                         ),
                       ),
                       Positioned(
@@ -153,13 +166,17 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(gameHandler!.audioManager.isMuted ? Icons.volume_off : Icons.volume_up),
+                      icon: Icon(gameHandler!.audioManager.isMuted
+                          ? Icons.volume_off
+                          : Icons.volume_up),
                       onPressed: () {
                         gameHandler!.toggleMute();
                       },
                     ),
                     IconButton(
-                      icon: Icon(gameHandler!.isGamePaused ? Icons.play_arrow : Icons.pause),
+                      icon: Icon(gameHandler!.isGamePaused
+                          ? Icons.play_arrow
+                          : Icons.pause),
                       onPressed: () {
                         gameHandler!.togglePauseGame();
                       },
@@ -168,9 +185,16 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       onPressed: () {
                         gameHandler!.pauseGame();
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => BirdGridPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BirdGridPage(
+                                      gameHandler: gameHandler!,
+                                    )));
+                        gameHandler!.resetGame();
                       },
-                      icon: const Icon(Icons.diamond_outlined, color: Colors.pink),
+                      icon: const Icon(Icons.diamond_outlined,
+                          color: Colors.pink),
                       tooltip: 'Bird Gallery',
                     ),
                     IconButton(
@@ -179,7 +203,8 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RankingPage(currentUserId: gameHandler!.player.id),
+                            builder: (context) => RankingPage(
+                                currentUserId: gameHandler!.player.id),
                           ),
                         );
                         gameHandler!.resetGame();
@@ -193,7 +218,8 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfileSettingsPage(player: gameHandler!.player),
+                            builder: (context) => ProfileSettingsPage(
+                                player: gameHandler!.player),
                           ),
                         );
                         gameHandler!.resetGame();

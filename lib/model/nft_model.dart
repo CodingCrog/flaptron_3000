@@ -6,12 +6,14 @@ class NFTModel {
   final String identifier;
   final String collection;
   final String token_standard;
+  final String opensea_url;
 
   NFTModel(
       {required this.name,
       required this.description,
       required this.contract,
       required this.image_url,
+      required this.opensea_url,
       required this.identifier,
       required this.collection,
       required this.token_standard});
@@ -25,6 +27,7 @@ class NFTModel {
       identifier: json['identifier'],
       collection: json['collection'],
       token_standard: json['token_standard'],
+      opensea_url: json['opensea_url'],
     );
   }
 
@@ -37,6 +40,7 @@ class NFTModel {
       'identifier': identifier,
       'collection': collection,
       'token_standard': token_standard,
+      'opensea_url': opensea_url,
     };
   }
 }
