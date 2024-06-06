@@ -22,8 +22,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   @override
   void initState() {
     super.initState();
-    profileName = LocalStorage.getDisplayName() ?? 'Unknown';
-    highScore = LocalStorage.getHighScore();
+    profileName = widget.player.username ?? 'Unknown';
+    highScore = widget.player.highScore;
   }
 
   Future<void> _deleteProfile() async {

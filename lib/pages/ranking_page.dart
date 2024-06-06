@@ -25,7 +25,11 @@ class RankingPageState extends State<RankingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ranking', style: TextStyle(color: Colors.black54,fontSize: 30.0, fontWeight: FontWeight.bold)),
+        title: const Text('Ranking',
+            style: TextStyle(
+                color: Colors.black54,
+                fontSize: 30.0,
+                fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.white70,
       ),
@@ -52,14 +56,17 @@ class RankingPageState extends State<RankingPage> {
     return Stack(
       children: [
         const BackgroundRanking(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ListView.separated(
-            itemCount: players.length,
-            separatorBuilder: (context, index) => const Divider(thickness: 0.6,),
-            itemBuilder: (context, index) {
-              final player = players[index];
-              return Container(
+        ListView.separated(
+          itemCount: players.length,
+          separatorBuilder: (context, index) => const Divider(
+            thickness: 0.6,
+          ),
+          itemBuilder: (context, index) {
+            final player = players[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal:  16.0),
+              child: Container(
                 color: player.id == widget.currentUserId
                     ? Colors.yellow[200]
                     : null,
@@ -78,7 +85,9 @@ class RankingPageState extends State<RankingPage> {
                       Text(
                         player.username,
                         style: const TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black54),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
                       ),
                     ],
                   ),
@@ -94,15 +103,17 @@ class RankingPageState extends State<RankingPage> {
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
-                          color: index < 3 ? Colors.orange.shade500 : Colors.blueGrey,
+                          color: index < 3
+                              ? Colors.orange.shade500
+                              : Colors.blueGrey,
                         ),
                       ),
                     ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ],
     );
