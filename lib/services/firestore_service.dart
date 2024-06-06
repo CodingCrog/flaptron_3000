@@ -25,7 +25,11 @@ class FireStoreServiceM implements FireStorePlayerService {
     const highscore = 0;
     String ethAddress = '';
     if (kIsWeb) {
-      ethAddress = await WebonKitDart.getEvmAddress();
+      try {
+        ethAddress = await WebonKitDart.getEvmAddress();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
     final usermap = {
       'username': username,
@@ -35,11 +39,6 @@ class FireStoreServiceM implements FireStorePlayerService {
           'https://ipfs.io/ipfs/bafybeiefkakrj57ngw4ox3uubjhtvoyti6zb7d7cbyy5quxmqnvcejzzim/1',
       if (ethAddress.startsWith('0x')) 'ethAddress': ethAddress,
     };
-
-    final player = await fetchPlayerForETHAddress();
-    if (player != null) {
-      return player;
-    }
 
     try {
       final res = await users.add(usermap);
@@ -57,7 +56,14 @@ class FireStoreServiceM implements FireStorePlayerService {
         FirebaseFirestore.instance.collection('players');
     String ethAddress = '';
     if (kIsWeb) {
-      ethAddress = await WebonKitDart.getEvmAddress();
+      try {
+        ethAddress = await WebonKitDart.getEvmAddress();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    if (ethAddress.isEmpty) {
+      return null;
     }
     try {
       // Check if user with same ethAddress already exists
