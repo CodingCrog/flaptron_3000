@@ -36,15 +36,9 @@ class FireStoreServiceM implements FireStorePlayerService {
       if (ethAddress.startsWith('0x')) 'ethAddress': ethAddress,
     };
 
-    // Check if user with same ethAddress already exists
-    final QuerySnapshot result =
-        await users.where('ethAddress', isEqualTo: ethAddress).limit(1).get();
-    final List<DocumentSnapshot> documents = result.docs;
-    if (documents.length == 1) {
-      debugPrint('User with same ethAddress already exists');
-      final playerData = documents.first.data() as Map<String, dynamic>;
-      playerData.putIfAbsent('id', () => documents.first.id);
-      return PlayerM.fromJson(playerData);
+    final player = await fetchPlayerForETHAddress();
+    if (player != null) {
+      return player;
     }
 
     try {
@@ -56,6 +50,31 @@ class FireStoreServiceM implements FireStorePlayerService {
       debugPrint(e.toString());
     }
     return null;
+  }
+
+  Future<PlayerM?> fetchPlayerForETHAddress() async {
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('players');
+    String ethAddress = '';
+    if (kIsWeb) {
+      ethAddress = await WebonKitDart.getEvmAddress();
+    }
+    try {
+      // Check if user with same ethAddress already exists
+      final QuerySnapshot result =
+          await users.where('ethAddress', isEqualTo: ethAddress).limit(1).get();
+      final List<DocumentSnapshot> documents = result.docs;
+      if (documents.length == 1) {
+        debugPrint('User with same ethAddress already exists');
+        final playerData = documents.first.data() as Map<String, dynamic>;
+        playerData.putIfAbsent('id', () => documents.first.id);
+        return PlayerM.fromJson(playerData);
+      }
+      return null;
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
   }
 
   @override
