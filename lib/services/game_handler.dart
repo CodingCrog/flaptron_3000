@@ -130,13 +130,9 @@ class GameHandler extends ChangeNotifier {
   }
 
   bool isBirdOffScreen(Bird bird) {
-    if (bird.pos.dy <= 0 ||
-        bird.pos.dy >= screenSize.height ||
-        bird.pos.dy >= 1 ||
-        bird.pos.dy >= screenSize.height) {
-      return true;
-    }
-    return false;
+    final dy = bird.pos.dy * screenSize.height;
+   // debugPrint('Bird position: $dy, Screen height: ${screenSize.height}');
+    return dy <= 0 || dy >= screenSize.height;
   }
 
   void handleGameOver() {
