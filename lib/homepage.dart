@@ -24,6 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GameHandler? gameHandler;
   late final Size screenSize;
+  final bool printAll = false;  // Set this to true, if you want to see all registered users from firestore in console
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
         MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeUser();
+      FireStoreServiceM().fetchAndPrintAllUsers(printAll);
     });
   }
 
