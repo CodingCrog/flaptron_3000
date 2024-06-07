@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flaptron_3000/model/player.dart';
+import 'package:flaptron_3000/utils/platform_utils.dart';
 import 'package:flutter/foundation.dart';
 
 import '../webon_kit_stub.dart'
     if (dart.library.js) 'package:webon_kit_dart/webon_kit_dart.dart';
+
+
 
 abstract class FireStorePlayerService {
   Future<PlayerM?> getPlayer(String playerId);
@@ -24,6 +27,7 @@ class FireStoreServiceM implements FireStorePlayerService {
         FirebaseFirestore.instance.collection('players');
     const highscore = 0;
     String ethAddress = '';
+    String platform = getPlatform();
     if (kIsWeb) {
       try {
         ethAddress = await WebonKitDart.getEvmAddress();
@@ -38,6 +42,8 @@ class FireStoreServiceM implements FireStorePlayerService {
       'birdPath':
           'https://ipfs.io/ipfs/bafybeiefkakrj57ngw4ox3uubjhtvoyti6zb7d7cbyy5quxmqnvcejzzim/1',
       if (ethAddress.startsWith('0x')) 'ethAddress': ethAddress,
+      'createdAt': FieldValue.serverTimestamp(),
+      'platform' : platform,
     };
 
     try {

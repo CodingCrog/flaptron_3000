@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       player = await FireStoreServiceM().getPlayer(playerId);
     }
     if (player == null) return;
-    gameHandler = GameHandler(player, screenSize); // Pass screenSize here
+    gameHandler = GameHandler(player, screenSize);
     setState(() {});
   }
 
