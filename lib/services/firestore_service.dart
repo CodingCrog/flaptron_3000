@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flaptron_3000/model/player.dart';
+import 'package:flaptron_3000/utils/platform_utils.dart';
 import 'package:flutter/foundation.dart';
 
 import '../webon_kit_stub.dart'
@@ -14,6 +15,8 @@ abstract class FireStorePlayerService {
 
   Future<bool> deletePlayer(PlayerM player);
 
+  Future<bool?> fetchAndPrintAllUsers(bool printAll);
+
   Future<List<PlayerM>> getTopPlayers();
 }
 
@@ -24,6 +27,7 @@ class FireStoreServiceM implements FireStorePlayerService {
         FirebaseFirestore.instance.collection('players');
     const highscore = 0;
     String ethAddress = '';
+    String platform = getPlatform();
     if (kIsWeb) {
       try {
         ethAddress = await WebonKitDart.getEvmAddress();
@@ -38,6 +42,8 @@ class FireStoreServiceM implements FireStorePlayerService {
       'birdPath':
           'https://ipfs.io/ipfs/bafybeiefkakrj57ngw4ox3uubjhtvoyti6zb7d7cbyy5quxmqnvcejzzim/1',
       if (ethAddress.startsWith('0x')) 'ethAddress': ethAddress,
+      'createdAt': FieldValue.serverTimestamp(),
+      'platform': platform,
     };
 
     try {
@@ -175,5 +181,34 @@ class FireStoreServiceM implements FireStorePlayerService {
       debugPrint(e.toString());
       return 0;
     }
+  }
+
+  @override
+  Future<bool?> fetchAndPrintAllUsers(bool printAll) async {
+    if (!kDebugMode || printAll == false) {
+      return false;
+    }
+
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('players');
+
+    try {
+      final QuerySnapshot result = await users.get();
+      final List<DocumentSnapshot> documents = result.docs;
+
+      debugPrint('Total number of unique users: ${documents.length}');
+
+      for (var doc in documents) {
+        var data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          String username = data['username'] ?? 'Unknown';
+          int highScore = data['highScore'] ?? 0;
+          debugPrint('Username: $username, HighScore: $highScore');
+        }
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return true;
   }
 }
