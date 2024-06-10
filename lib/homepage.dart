@@ -7,11 +7,13 @@ import 'package:flaptron_3000/pages/profile_setting_page.dart';
 import 'package:flaptron_3000/pages/ranking_page.dart';
 import 'package:flaptron_3000/services/firestore_service.dart';
 import 'package:flaptron_3000/services/game_handler.dart';
+import 'package:flaptron_3000/utils/fallback_mode.dart';
 import 'package:flaptron_3000/utils/shared_pref.dart';
 import 'package:flaptron_3000/widgets/taphint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flaptron_3000/widgets/birdWidget.dart';
+import 'package:webon_kit_dart/webon_kit_dart.dart';
 import 'level/background_web.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +26,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GameHandler? gameHandler;
   late final Size screenSize;
-  final bool printAll = false;  // Set this to true, if you want to see all registered users from firestore in console
+  final bool printAll =
+      false; // Set this to true, if you want to see all registered users from firestore in console do not commit = true
+  final bool skipFallback =
+      false; // Set this to true, if you want to skip the fallback mode do not commit = true
 
   @override
   void initState() {
@@ -32,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     screenSize =
         MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!skipFallback) _isFallbackModeActive();
       _initializeUser();
       FireStoreServiceM().fetchAndPrintAllUsers(printAll);
     });
@@ -41,6 +47,20 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     gameHandler?.audioManager.dispose();
     super.dispose();
+  }
+
+  bool _isFallbackModeActive() {
+    if (WebonKitDart.isFallbackMode()) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const NomoFallbackQRCodeDialog();
+        },
+      );
+      return true;
+    }
+    return false;
   }
 
   Future<void> _initializeUser() async {

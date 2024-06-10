@@ -46,6 +46,7 @@ dependencies:
 
   webon_kit_dart:
     path: packages/webon_kit_dart
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
