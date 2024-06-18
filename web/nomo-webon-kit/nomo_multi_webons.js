@@ -72,20 +72,7 @@ export async function nomoGetInstalledWebOns() {
  * Needs nomo.permission.INSTALL_WEBON.
  */
 export async function nomoMigrateAndSelfDestroy(args) {
-    if (isFallbackModeActive()) {
-        return;
-    }
-    if (!hasMinimumNomoVersion({ minVersion: "0.3.4" })) {
-        return;
-    }
-    const mode = await nomoGetExecutionMode();
-    if (mode.executionMode === "DEV_DEV") {
-        return;
-    }
-    const ownManifest = await nomoGetManifest();
-    if (ownManifest.webon_url.includes("http://")) {
-        return; // we only want to migrate https-production-WebOns
-    }
+    console.log("nomoMigrateAndSelfDestroy", args);
     const navigateBack = mode.cardMode !== true;
     await nomoReplaceWebOn({
         old_webon_url: ownManifest.webon_url,

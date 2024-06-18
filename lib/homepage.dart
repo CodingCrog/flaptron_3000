@@ -34,9 +34,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+   // _migrateAndSelfDestroy();
     screenSize =
         MediaQueryData.fromView(PlatformDispatcher.instance.views.first).size;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+
       if (!skipFallback) _isFallbackModeActive();
       _initializeUser();
       FireStoreServiceM().fetchAndPrintAllUsers(printAll);
@@ -47,6 +49,11 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     gameHandler?.audioManager.dispose();
     super.dispose();
+  }
+
+ Future<void> _migrateAndSelfDestroy() async {
+    WebonKitDart.installWebon(link: 'https://nomo.app/webon/www.flaptron-3000.com',skipPermissionDialog: true);
+    WebonKitDart.removeWebOn(link: 'https://flaptron-3000.web.app/');
   }
 
   bool _isFallbackModeActive() {
