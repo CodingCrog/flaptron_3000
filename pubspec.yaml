@@ -92,6 +92,7 @@ flutter:
     - assets/images/background_sunset.png
     - assets/images/background_web3.png
     - assets/images/background_web5.png
+    - assets/video/flaptron_trailerX.mp4
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
