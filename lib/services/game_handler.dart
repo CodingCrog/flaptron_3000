@@ -48,7 +48,7 @@ class GameHandler extends ChangeNotifier {
       SpeedManager.resetObstacleSpeed();
       physicsManager.resetPhysics(player);
       gameState = GameState.PLAYING;
-      audioManager.play("sounds/MegaMan2.mp3");
+      audioManager.play("sounds/flaptron_beat.mp3");
       obstacleManager.generateObstacle(screenSize);
       bitcoinManager.spawnRandomBitcoin();
       startTicker();

@@ -83,6 +83,7 @@ flutter:
     - assets/gifs/background1.gif
     - assets/images/pipe.jpeg
     - assets/sounds/MegaMan2.mp3
+    - assets/sounds/flaptron_beat.mp3
     - assets/lottiefiles/rip.json
     - assets/lottiefiles/tap.json
     - assets/lottiefiles/bitcoin.json
